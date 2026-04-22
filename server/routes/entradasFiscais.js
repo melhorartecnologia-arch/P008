@@ -761,10 +761,29 @@ router.get('/items', async (req, res, next) => {
     const { from, to, maxPercent, minPercent, codigoFilial } = readRange(req)
     const op = req.query.op === 'lt' || req.query.op === 'gt' ? req.query.op : null
 
+    // Filtro opcional por grupo de produto
+    //  - ?grupoProdutoId=123  → apenas este grupo
+    //  - ?grupoProdutoId=null → apenas itens sem grupo classificado
+    let grupoFilter = null
+    if (req.query.grupoProdutoId !== undefined) {
+      const raw = String(req.query.grupoProdutoId)
+      if (raw === 'null') grupoFilter = 'null'
+      else {
+        const n = Number(raw)
+        if (Number.isInteger(n) && n > 0) grupoFilter = n
+      }
+    }
+
     const params = []
     const where = [
       `codigo_tipo_entrada IN (SELECT codigo FROM tipos_entrada_saida WHERE considera_analise = TRUE)`
     ]
+    if (grupoFilter === 'null') {
+      where.push(`grupo_produto_id IS NULL`)
+    } else if (typeof grupoFilter === 'number') {
+      params.push(grupoFilter)
+      where.push(`grupo_produto_id = $${params.length}`)
+    }
     if (codigoFilial) { params.push(codigoFilial); where.push(`codigo_filial = $${params.length}`) }
     if (from) { params.push(from); where.push(`data_emissao_nota_fiscal >= $${params.length}`) }
     if (to)   { params.push(to);   where.push(`data_emissao_nota_fiscal <= $${params.length}`) }

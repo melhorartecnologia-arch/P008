@@ -19,11 +19,17 @@ const fmtDateTime = (iso) => {
   }).format(d)
 }
 
-function buildQuery({ range, codigoFilial, filter }) {
+function buildQuery({ range, codigoFilial, filter, grupoProdutoId }) {
   const parts = []
   if (range?.from) parts.push(`from=${encodeURIComponent(range.from)}`)
   if (range?.to)   parts.push(`to=${encodeURIComponent(range.to)}`)
   if (codigoFilial) parts.push(`codigoFilial=${encodeURIComponent(codigoFilial)}`)
+  if (grupoProdutoId !== undefined && grupoProdutoId !== null) {
+    parts.push(`grupoProdutoId=${encodeURIComponent(grupoProdutoId)}`)
+  } else if (grupoProdutoId === null) {
+    // cliente pode passar null explicitamente para "Sem grupo"
+    parts.push(`grupoProdutoId=null`)
+  }
   if (filter?.op === 'lt' || filter?.op === 'gt') {
     parts.push(`op=${filter.op}`)
     if (typeof filter.maxPercent === 'number' && filter.maxPercent > 0) {
@@ -36,7 +42,7 @@ function buildQuery({ range, codigoFilial, filter }) {
   return parts.length ? `?${parts.join('&')}` : ''
 }
 
-export default function DayDetailsModal({ range, codigoFilial, filter, onClose }) {
+export default function DayDetailsModal({ range, codigoFilial, filter, grupoProdutoId, onClose }) {
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -57,7 +63,7 @@ export default function DayDetailsModal({ range, codigoFilial, filter, onClose }
   const loadItems = useCallback(async () => {
     setLoading(true)
     try {
-      const qs = buildQuery({ range, codigoFilial, filter })
+      const qs = buildQuery({ range, codigoFilial, filter, grupoProdutoId })
       const data = await apiGet(`/entradas-fiscais/items${qs}`)
       setItems(Array.isArray(data) ? data : [])
       setError(null)
@@ -66,7 +72,7 @@ export default function DayDetailsModal({ range, codigoFilial, filter, onClose }
     } finally {
       setLoading(false)
     }
-  }, [range?.from, range?.to, codigoFilial, filter])
+  }, [range?.from, range?.to, codigoFilial, filter, grupoProdutoId])
 
   useEffect(() => { loadItems() }, [loadItems])
 

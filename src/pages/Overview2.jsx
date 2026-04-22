@@ -4,9 +4,7 @@ import TopBar, {
 } from '../components/TopBar.jsx'
 import TotalBalance from '../components/TotalBalance.jsx'
 import Performance from '../components/Performance.jsx'
-import SpentAmount from '../components/SpentAmount.jsx'
 import VariacaoPorGrupo from '../components/VariacaoPorGrupo.jsx'
-import Revenue from '../components/Revenue.jsx'
 import NfVariationCard from '../components/NfVariationCard.jsx'
 import DayDetailsModal from '../components/DayDetailsModal.jsx'
 import { useApi } from '../api.js'
@@ -22,6 +20,30 @@ function monthRange(offset = 0) {
   const first = new Date(now.getFullYear(), now.getMonth() + offset, 1)
   const last  = new Date(first.getFullYear(), first.getMonth() + 1, 0)
   return { from: toISODate(first), to: toISODate(last) }
+}
+
+const SCENARIO_META = {
+  lt:    { op: 'lt', label: 'NF < Negociado',          color: '#19b26b' },
+  gt:    { op: 'gt', label: 'NF > Negociado',          color: '#e5484d' },
+  gtLe2: { op: 'gt', maxPercent: 2, label: 'NF > Negociado (até 2%)',    color: '#f5c518' },
+  gtGt2: { op: 'gt', minPercent: 2, label: 'NF > Negociado (acima de 2%)', color: '#c01d22' }
+}
+
+function buildFilterForCell(grupo, scenarioKey) {
+  const scen = scenarioKey ? SCENARIO_META[scenarioKey] : null
+  const parts = []
+  if (grupo?.codigo) parts.push(grupo.codigo)
+  else if (grupo && grupo.grupoId === null) parts.push('Sem grupo')
+  if (scen) parts.push(scen.label)
+  const label = parts.join(' · ') || 'Todos os itens'
+  const color = scen?.color || '#2f6bff'
+  return {
+    label,
+    color,
+    op: scen?.op,
+    maxPercent: scen?.maxPercent,
+    minPercent: scen?.minPercent
+  }
 }
 
 const CARDS = [
@@ -131,13 +153,20 @@ export default function Overview2() {
         <Performance />
       </section>
 
-      <section className="grid row-3">
-        <SpentAmount />
-        <Revenue />
-      </section>
-
       <section className="grid row-grupos">
-        <VariacaoPorGrupo range={activeRange} codigoFilial={filialCodigo} />
+        <VariacaoPorGrupo
+          range={activeRange}
+          codigoFilial={filialCodigo}
+          onCellClick={(grupo, scenarioKey) => {
+            const filter = buildFilterForCell(grupo, scenarioKey)
+            setDetailsCtx({
+              range: activeRange,
+              codigoFilial: filialCodigo,
+              filter,
+              grupoProdutoId: grupo ? (grupo.grupoId ?? 'null') : undefined
+            })
+          }}
+        />
       </section>
 
       {detailsCtx && (
@@ -145,6 +174,7 @@ export default function Overview2() {
           range={detailsCtx.range}
           codigoFilial={detailsCtx.codigoFilial}
           filter={detailsCtx.filter}
+          grupoProdutoId={detailsCtx.grupoProdutoId}
           onClose={() => setDetailsCtx(null)}
         />
       )}

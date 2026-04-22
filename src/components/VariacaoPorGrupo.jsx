@@ -4,7 +4,7 @@ import { useApi } from '../api.js'
 const GREEN        = '#19b26b'
 const RED          = '#e5484d'
 const RED_DEEP     = '#c01d22'
-const YELLOW       = '#b8700e'   // texto amarelo legível
+const YELLOW       = '#b8700e'
 const MUTED        = '#9aa1ac'
 
 const SCENARIOS = [
@@ -41,7 +41,7 @@ function ScenarioCell({ cell, color }) {
   )
 }
 
-export default function VariacaoPorGrupo({ range, codigoFilial }) {
+export default function VariacaoPorGrupo({ range, codigoFilial, onCellClick }) {
   const parts = []
   if (range?.from && range?.to && range.from <= range.to) {
     parts.push(`from=${encodeURIComponent(range.from)}`)
@@ -67,12 +67,31 @@ export default function VariacaoPorGrupo({ range, codigoFilial }) {
   const groups = Array.isArray(data?.groups) ? data.groups : []
   const totals = data?.totals ?? fallback.totals
 
+  const clickable = typeof onCellClick === 'function'
+  const cellProps = (grupo, scenarioKey) => clickable
+    ? {
+        className: 'clickable-cell',
+        role: 'button',
+        tabIndex: 0,
+        onClick: () => onCellClick(grupo, scenarioKey),
+        onKeyDown: (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onCellClick(grupo, scenarioKey)
+          }
+        }
+      }
+    : {}
+
   return (
     <div className="card">
       <div className="card-head">
         <span className="card-title">
           <Layers size={13} />
           <span>Variação por Grupo de Produtos</span>
+          {clickable && (
+            <span className="card-hint">clique em qualquer célula para ver os documentos</span>
+          )}
         </span>
         <button className="card-arrow" aria-label="Open">
           <ArrowUpRight size={14} />
@@ -121,8 +140,8 @@ export default function VariacaoPorGrupo({ range, codigoFilial }) {
                                  : positive    ? 'Economia'
                                                : 'Sobrepreço'
               return (
-                <tr key={g.grupoId ?? 'null'}>
-                  <td>
+                <tr key={g.grupoId ?? 'null'} className={clickable ? 'clickable-row' : ''}>
+                  <td {...cellProps(g, null)}>
                     <div className="grupo-cell">
                       <span className="grupo-pill" title={g.descricao || ''}>
                         <Layers size={10} />
@@ -133,11 +152,12 @@ export default function VariacaoPorGrupo({ range, codigoFilial }) {
                       </span>
                     </div>
                   </td>
-                  <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                  <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}
+                      {...cellProps(g, null)}>
                     {fmtInt(g.count)}
                   </td>
                   {SCENARIOS.map((s) => (
-                    <td key={s.key} style={{ textAlign: 'right' }}>
+                    <td key={s.key} style={{ textAlign: 'right' }} {...cellProps(g, s.key)}>
                       <ScenarioCell cell={g.scenarios?.[s.key]} color={s.color} />
                     </td>
                   ))}
@@ -146,10 +166,11 @@ export default function VariacaoPorGrupo({ range, codigoFilial }) {
                     fontVariantNumeric: 'tabular-nums',
                     fontWeight: 700,
                     color: statusColor
-                  }}>
+                  }}
+                      {...cellProps(g, null)}>
                     {g.net === 0 ? '—' : fmtBRLCompact(g.net)}
                   </td>
-                  <td>
+                  <td {...cellProps(g, null)}>
                     <span className="status-pill" style={{ color: statusColor }}>
                       <StatusIcon size={12} />
                       {statusLabel}
@@ -162,13 +183,16 @@ export default function VariacaoPorGrupo({ range, codigoFilial }) {
 
           {groups.length > 0 && (
             <tfoot>
-              <tr>
-                <td><strong style={{ color: 'var(--text-2)' }}>Total</strong></td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+              <tr className={clickable ? 'clickable-row' : ''}>
+                <td {...cellProps(null, null)}>
+                  <strong style={{ color: 'var(--text-2)' }}>Total</strong>
+                </td>
+                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}
+                    {...cellProps(null, null)}>
                   {fmtInt(totals.count)}
                 </td>
                 {SCENARIOS.map((s) => (
-                  <td key={s.key} style={{ textAlign: 'right' }}>
+                  <td key={s.key} style={{ textAlign: 'right' }} {...cellProps(null, s.key)}>
                     <ScenarioCell cell={totals.scenarios?.[s.key]} color={s.color} />
                   </td>
                 ))}
@@ -177,10 +201,12 @@ export default function VariacaoPorGrupo({ range, codigoFilial }) {
                   fontVariantNumeric: 'tabular-nums',
                   fontWeight: 700,
                   color: totals.net >= 0 ? GREEN : RED
-                }}>
+                }}
+                    {...cellProps(null, null)}>
                   {fmtBRLCompact(totals.net)}
                 </td>
-                <td style={{ color: 'var(--text-3)', fontSize: 11, lineHeight: 1.3 }}>
+                <td style={{ color: 'var(--text-3)', fontSize: 11, lineHeight: 1.3 }}
+                    {...cellProps(null, null)}>
                   <div><span style={{ color: GREEN }}>▲ {fmtBRLCompact(totals.savings)}</span></div>
                   <div><span style={{ color: RED }}>▼ {fmtBRLCompact(totals.overspend)}</span></div>
                 </td>
