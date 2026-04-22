@@ -62,25 +62,31 @@ export default function ClassificarGruposModal({ onClose, onDone }) {
                 <div className="algo-card">
                   <span className="algo-badge ok">1</span>
                   <div>
-                    <strong>Palavra inteira</strong>
+                    <strong>Palavra inteira com peso pela posição</strong>
                     <small>
-                      Casa a palavra-chave como palavra completa (word-boundary) na
-                      descrição normalizada (sem acentos, minúsculas). Peso alto.
+                      Tokeniza a descrição e procura a palavra-chave como palavra
+                      completa (suporta chaves compostas). O índice da primeira
+                      palavra casada entra no score — <strong>quanto mais cedo
+                      ela aparece, maior o peso</strong>. Descrições que começam
+                      com o termo vencem.
                     </small>
                   </div>
                 </div>
                 <div className="algo-card">
                   <span className="algo-badge soft">2</span>
                   <div>
-                    <strong>Substring normalizada</strong>
+                    <strong>Substring com peso pela posição</strong>
                     <small>
-                      Fallback: casa a palavra-chave como substring simples na
-                      descrição normalizada. Peso baixo.
+                      Fallback: se a palavra-chave não casar como palavra inteira,
+                      procura como substring e usa a posição do primeiro caractere
+                      casado para ponderar. Prevalece sobre não-casar, mas perde
+                      para qualquer match do algoritmo 1.
                     </small>
                   </div>
                 </div>
                 <div className="algo-hint">
                   Desempate: maior comprimento da palavra-chave; depois código do grupo (asc).
+                  Comparações sem acento e sem diferenciar maiúsculas.
                 </div>
               </div>
 

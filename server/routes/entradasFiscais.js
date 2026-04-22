@@ -946,17 +946,20 @@ router.post('/classificar-grupos', async (req, res, next) => {
     const normalize = (s) => String(s || '')
       .normalize('NFD').replace(/[̀-ͯ]/g, '')
       .toLowerCase()
-    const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
-    // Pré-processa grupos (normaliza + compila regex de palavra inteira)
+    // Pré-processa grupos. Cada palavra-chave vira tokens para casar
+    // contra a sequência de palavras da descrição (suporta keyword
+    // composta tipo "água tônica").
     const preparedGrupos = grupos.map((g) => {
       const kw = normalize(g.palavra_chave).trim()
-      return kw ? {
+      if (!kw) return null
+      const kwTokens = kw.split(/[^a-z0-9]+/).filter(Boolean)
+      return kwTokens.length ? {
         id: g.id,
         codigo: g.codigo,
         kw,
         kwLen: kw.length,
-        wordRe: new RegExp(`(^|[^a-z0-9])${escapeRegExp(kw)}($|[^a-z0-9])`)
+        kwTokens
       } : null
     }).filter(Boolean)
 
@@ -967,12 +970,38 @@ router.post('/classificar-grupos', async (req, res, next) => {
 
     for (const ef of entradas) {
       const desc = normalize(ef.descricao_produto)
+      const words = desc.split(/[^a-z0-9]+/).filter(Boolean)
       let best = null
+
       for (const g of preparedGrupos) {
         let score = 0
         let algo = null
-        if (g.wordRe.test(desc))       { score = 1000 + g.kwLen; algo = 'word' }
-        else if (desc.includes(g.kw))  { score = g.kwLen;        algo = 'substring' }
+
+        // Algoritmo 1: match de palavra inteira considerando a posição.
+        // Percorre a lista de palavras da descrição e vê se a sequência
+        // de tokens da palavra-chave aparece por inteiro. O índice da
+        // PRIMEIRA palavra casada entra no score — quanto mais cedo,
+        // maior o peso. Descrições começando com o termo vencem.
+        let wordIdx = -1
+        for (let i = 0; i + g.kwTokens.length <= words.length; i++) {
+          let ok = true
+          for (let j = 0; j < g.kwTokens.length; j++) {
+            if (words[i + j] !== g.kwTokens[j]) { ok = false; break }
+          }
+          if (ok) { wordIdx = i; break }
+        }
+        if (wordIdx >= 0) {
+          // Peso do tier + peso da posição (cada palavra vale 100 de penalidade)
+          // + desempate pelo comprimento da palavra-chave.
+          score = 20000 - Math.min(wordIdx, 150) * 100 + g.kwLen
+          algo = 'word'
+        } else if (desc.includes(g.kw)) {
+          // Algoritmo 2 (fallback): substring, também com peso de posição.
+          const charIdx = desc.indexOf(g.kw)
+          score = 10000 - Math.min(charIdx, 1000) + g.kwLen
+          algo = 'substring'
+        }
+
         if (score > 0) {
           if (!best || score > best.score ||
              (score === best.score && g.codigo < best.codigo)) {
