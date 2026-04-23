@@ -5,25 +5,25 @@ import { FIELDS, formatValue } from '../pages/entradasFiscaisFields.js'
 
 const BASE = import.meta.env.VITE_API_BASE || '/api'
 
-// Nas tabelas de detalhes os valores monetários usam 4 casas decimais
-// para preservar a precisão unitária (ex.: R$ 1,2345).
-const fmtMoney = (n) => (n != null && n !== '')
-  ? new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-      minimumFractionDigits: 4,
-      maximumFractionDigits: 4
-    }).format(Number(n))
-  : '—'
-const fmtMoneyPlain = (v) => {
-  if (v === null || v === undefined || v === '') return ''
+// Valores unitários (NF / Negociado / aside) usam 4 casas decimais
+// para preservar a precisão por unidade (ex.: R$ 1,2345). Já o total
+// da Variação (R$) e o Valor de entrada (NF) são valores "cheios"
+// e ficam em 2 casas decimais para facilitar a leitura.
+const makeMoney = (digits, { currency } = {}) => (v) => {
+  if (v === null || v === undefined || v === '') return currency ? '—' : ''
   const n = Number(v)
   if (!Number.isFinite(n)) return String(v)
-  return new Intl.NumberFormat('pt-BR', {
-    minimumFractionDigits: 4,
-    maximumFractionDigits: 4
-  }).format(n)
+  const opts = {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits
+  }
+  if (currency) { opts.style = 'currency'; opts.currency = 'BRL' }
+  return new Intl.NumberFormat('pt-BR', opts).format(n)
 }
+const fmtMoney       = makeMoney(4, { currency: true })
+const fmtMoneyPlain  = makeMoney(4)
+const fmtMoney2      = makeMoney(2, { currency: true })
+const fmtMoneyPlain2 = makeMoney(2)
 const fmtQty = (n) => (n != null && n !== '')
   ? new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 4 }).format(Number(n))
   : '—'
@@ -152,7 +152,7 @@ const EXTRA_AFTER_GROUP = {
         return (
           <>
             <span className={`doc-line doc-main var-${tone}`}>
-              {fmtMoney(v)}
+              {fmtMoney2(v)}
             </span>
             <span className={`doc-line doc-muted var-${tone}`}>
               {fmtPct(pct)}
@@ -472,7 +472,7 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                             textAlign: f.align === 'right' ? 'right' : 'left',
                             fontVariantNumeric: f.kind === 'numeric' ? 'tabular-nums' : 'normal'
                           }}>
-                            {f.money ? fmtMoneyPlain(it[f.name]) : formatValue(f, it[f.name])}
+                            {f.money ? fmtMoneyPlain2(it[f.name]) : formatValue(f, it[f.name])}
                           </td>
                         )
                       })}
