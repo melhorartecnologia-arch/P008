@@ -78,11 +78,24 @@ function makeVarTooltip(longFmt) {
   }
 }
 
-const labelFmt = (v) => (v && v > 0) ? fmtBRLCompact(v) : ''
+// Label compacto sem prefixo "R$" — mais curto pra caber em cima das barras
+// sem sobrepor com o vizinho. Esconde valores zero e muito pequenos em
+// relação ao máximo da série (para evitar poluição quando há muitos dias).
+function makeLabelFormatter(maxValue) {
+  const threshold = Math.max(maxValue * 0.06, 1) // 6% do pico da série
+  return (v) => {
+    const n = Number(v)
+    if (!Number.isFinite(n) || n <= 0 || n < threshold) return ''
+    const abs = Math.abs(n)
+    if (abs >= 1_000_000) return `${(n / 1_000_000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}M`
+    if (abs >= 1_000)     return `${(n / 1_000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}k`
+    return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 }).format(n)
+  }
+}
 
 function VariationChart({
   series,
-  showLabels = false,
+  large = false,
   yAxisWidth = 60,
   granularity = 'day',
   onBarClick
@@ -96,12 +109,19 @@ function VariationChart({
     : undefined
   const barStyle = clickable ? { cursor: 'pointer' } : undefined
 
+  const maxSavings   = Math.max(0, ...series.map((d) => Number(d.savings)   || 0))
+  const maxOverspend = Math.max(0, ...series.map((d) => Number(d.overspend) || 0))
+  const savingsFmt   = makeLabelFormatter(maxSavings)
+  const overspendFmt = makeLabelFormatter(maxOverspend)
+
+  const labelFontSize = large ? 12 : 10
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart
         data={series}
-        barCategoryGap={showLabels ? 12 : 4}
-        margin={{ top: showLabels ? 24 : 10, right: 8, bottom: 0, left: -8 }}
+        barCategoryGap={large ? 12 : 6}
+        margin={{ top: large ? 26 : 20, right: 8, bottom: 0, left: -8 }}
       >
         <CartesianGrid stroke="#eef0f3" strokeDasharray="3 4" vertical={false} />
         <XAxis
@@ -109,35 +129,35 @@ function VariationChart({
           tickFormatter={shortFmt}
           axisLine={false}
           tickLine={false}
-          tick={{ fontSize: showLabels ? 12 : 10, fill: '#9aa1ac' }}
+          tick={{ fontSize: large ? 12 : 10, fill: '#9aa1ac' }}
           interval="preserveStartEnd"
-          minTickGap={showLabels ? 8 : 14}
+          minTickGap={large ? 8 : 14}
         />
         <YAxis
           axisLine={false}
           tickLine={false}
-          tick={{ fontSize: showLabels ? 12 : 10, fill: '#9aa1ac' }}
+          tick={{ fontSize: large ? 12 : 10, fill: '#9aa1ac' }}
           tickFormatter={fmtBRLCompact}
           width={yAxisWidth}
         />
         <Tooltip content={<Tip />} cursor={{ fill: 'rgba(47, 107, 255, 0.06)' }} />
         <Bar dataKey="savings" fill={GREEN} radius={[3, 3, 0, 0]} onClick={handleClick} style={barStyle}>
-          {showLabels && (
-            <LabelList
-              dataKey="savings" position="top"
-              formatter={labelFmt}
-              style={{ fontSize: 11, fontWeight: 600, fill: '#137a42' }}
-            />
-          )}
+          <LabelList
+            dataKey="savings"
+            position="top"
+            offset={4}
+            formatter={savingsFmt}
+            style={{ fontSize: labelFontSize, fontWeight: 700, fill: '#137a42' }}
+          />
         </Bar>
         <Bar dataKey="overspend" fill={RED} radius={[3, 3, 0, 0]} onClick={handleClick} style={barStyle}>
-          {showLabels && (
-            <LabelList
-              dataKey="overspend" position="top"
-              formatter={labelFmt}
-              style={{ fontSize: 11, fontWeight: 600, fill: '#b6242a' }}
-            />
-          )}
+          <LabelList
+            dataKey="overspend"
+            position="top"
+            offset={4}
+            formatter={overspendFmt}
+            style={{ fontSize: labelFontSize, fontWeight: 700, fill: '#b6242a' }}
+          />
         </Bar>
       </BarChart>
     </ResponsiveContainer>
@@ -263,7 +283,7 @@ export default function TotalBalance({ range, filter, codigoFilial }) {
           </button>
         )}
 
-        <div style={{ height: 180, marginTop: 10 }}>
+        <div style={{ height: 200, marginTop: 10 }}>
           <VariationChart
             series={series}
             granularity={granularity}
@@ -333,7 +353,7 @@ export default function TotalBalance({ range, filter, codigoFilial }) {
             <div className="modal-body chart-modal-body">
               <VariationChart
                 series={series}
-                showLabels
+                large
                 yAxisWidth={80}
                 granularity={granularity}
                 onBarClick={handleBarClick}
