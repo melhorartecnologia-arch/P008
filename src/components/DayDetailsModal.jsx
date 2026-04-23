@@ -5,13 +5,75 @@ import { FIELDS, formatValue } from '../pages/entradasFiscaisFields.js'
 
 const BASE = import.meta.env.VITE_API_BASE || '/api'
 
-// Campos agrupados em uma única coluna "Documento" na tabela de detalhes
-const COMBINED_DOC_FIELDS = new Set([
-  'codigoFilial',
-  'numeroDocumentoFiscal',
-  'serieDocumentoFiscal',
-  'itemDocumentoFiscal'
-])
+// Colunas que são fundidas em uma única célula empilhada na tabela
+// de detalhes. O `fields[0]` define onde o cluster é renderizado
+// (posição original do primeiro campo dentro de FIELDS).
+const COMBINED_GROUPS = [
+  {
+    key: 'documento',
+    label: 'Documento',
+    minWidth: 160,
+    fields: ['codigoFilial', 'numeroDocumentoFiscal', 'serieDocumentoFiscal', 'itemDocumentoFiscal'],
+    renderBody: (it) => (
+      <>
+        <span className="doc-line doc-muted">
+          Filial <strong>{it.codigoFilial || '—'}</strong>
+        </span>
+        <span className="doc-line doc-main">
+          NF {it.numeroDocumentoFiscal || '—'} / {it.serieDocumentoFiscal || '—'}
+        </span>
+        <span className="doc-line doc-muted">
+          item {it.itemDocumentoFiscal || '—'}
+        </span>
+      </>
+    )
+  },
+  {
+    key: 'produto',
+    label: 'Produto',
+    minWidth: 220,
+    fields: ['codigoProduto', 'descricaoProduto'],
+    renderBody: (it) => (
+      <>
+        <span className="doc-line doc-muted">{it.codigoProduto || '—'}</span>
+        <span className="doc-line doc-main">{it.descricaoProduto || '—'}</span>
+      </>
+    )
+  },
+  {
+    key: 'pedido',
+    label: 'Pedido de Compras',
+    minWidth: 160,
+    fields: ['numeroPedidoCompras', 'tipoPedidoCompras'],
+    renderBody: (it) => (
+      <>
+        <span className="doc-line doc-main">{it.numeroPedidoCompras || '—'}</span>
+        <span className="doc-line doc-muted">{it.tipoPedidoCompras || '—'}</span>
+      </>
+    )
+  },
+  {
+    key: 'tipoEntrada',
+    label: 'Tipo de Entrada',
+    minWidth: 180,
+    fields: ['codigoTipoEntrada', 'descricaoTipoEntrada'],
+    renderBody: (it) => (
+      <>
+        <span className="doc-line doc-muted">{it.codigoTipoEntrada || '—'}</span>
+        <span className="doc-line doc-main">{it.descricaoTipoEntrada || '—'}</span>
+      </>
+    )
+  }
+]
+
+const GROUP_BY_FIRST_FIELD = new Map(
+  COMBINED_GROUPS.map((g) => [g.fields[0], g])
+)
+const COMBINED_FIELD_NAMES = new Set(
+  COMBINED_GROUPS.flatMap((g) => g.fields)
+)
+const TOTAL_DATA_COLUMNS =
+  COMBINED_GROUPS.length + (FIELDS.length - COMBINED_FIELD_NAMES.size)
 
 const fmtDayLong = (iso) => {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '')
@@ -194,19 +256,29 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                   <tr>
                     <th className="col-id">ID</th>
                     <th style={{ minWidth: 100, textAlign: 'center' }}>Justif.</th>
-                    <th style={{ minWidth: 160 }}>Documento</th>
-                    {FIELDS.filter((f) => !COMBINED_DOC_FIELDS.has(f.name)).map((f) => (
-                      <th key={f.name} style={{
-                        minWidth: f.w,
-                        textAlign: f.align === 'right' ? 'right' : 'left'
-                      }}>{f.label}</th>
-                    ))}
+                    {FIELDS.map((f) => {
+                      const group = GROUP_BY_FIRST_FIELD.get(f.name)
+                      if (group) {
+                        return (
+                          <th key={`g-${group.key}`} style={{ minWidth: group.minWidth }}>
+                            {group.label}
+                          </th>
+                        )
+                      }
+                      if (COMBINED_FIELD_NAMES.has(f.name)) return null
+                      return (
+                        <th key={f.name} style={{
+                          minWidth: f.w,
+                          textAlign: f.align === 'right' ? 'right' : 'left'
+                        }}>{f.label}</th>
+                      )
+                    })}
                   </tr>
                 </thead>
                 <tbody>
                   {!loading && items.length === 0 && (
                     <tr>
-                      <td colSpan={FIELDS.length - COMBINED_DOC_FIELDS.size + 3}>
+                      <td colSpan={TOTAL_DATA_COLUMNS + 2}>
                         <div className="empty-state">Nenhum documento fiscal para este dia com os filtros aplicados.</div>
                       </td>
                     </tr>
@@ -225,26 +297,25 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                           {it.justificativasCount || 0}
                         </span>
                       </td>
-                      <td className="doc-cell">
-                        <span className="doc-line doc-muted">
-                          Filial <strong>{it.codigoFilial || '—'}</strong>
-                        </span>
-                        <span className="doc-line doc-main">
-                          NF {it.numeroDocumentoFiscal || '—'}
-                          {' / '}{it.serieDocumentoFiscal || '—'}
-                        </span>
-                        <span className="doc-line doc-muted">
-                          item {it.itemDocumentoFiscal || '—'}
-                        </span>
-                      </td>
-                      {FIELDS.filter((f) => !COMBINED_DOC_FIELDS.has(f.name)).map((f) => (
-                        <td key={f.name} style={{
-                          textAlign: f.align === 'right' ? 'right' : 'left',
-                          fontVariantNumeric: f.kind === 'numeric' ? 'tabular-nums' : 'normal'
-                        }}>
-                          {formatValue(f, it[f.name])}
-                        </td>
-                      ))}
+                      {FIELDS.map((f) => {
+                        const group = GROUP_BY_FIRST_FIELD.get(f.name)
+                        if (group) {
+                          return (
+                            <td key={`g-${group.key}`} className="doc-cell">
+                              {group.renderBody(it)}
+                            </td>
+                          )
+                        }
+                        if (COMBINED_FIELD_NAMES.has(f.name)) return null
+                        return (
+                          <td key={f.name} style={{
+                            textAlign: f.align === 'right' ? 'right' : 'left',
+                            fontVariantNumeric: f.kind === 'numeric' ? 'tabular-nums' : 'normal'
+                          }}>
+                            {formatValue(f, it[f.name])}
+                          </td>
+                        )
+                      })}
                     </tr>
                   ))}
                 </tbody>
