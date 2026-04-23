@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   LayoutDashboard, MoreVertical,
   FolderOpen, ChevronDown, ChevronRight,
-  ArrowRightLeft, ShoppingBag, Receipt, Building2, Layers
+  ArrowRightLeft, ShoppingBag, Receipt, Building2, Layers, FileCheck2
 } from 'lucide-react'
 
 const primary = [
@@ -11,10 +11,11 @@ const primary = [
 ]
 
 const cadastros = [
-  { icon: ArrowRightLeft, label: 'Tipo de Entrada e Saída', route: 'tipos-entrada-saida' },
-  { icon: ShoppingBag,    label: 'Produtos',                route: 'produtos' },
-  { icon: Layers,         label: 'Grupo de Produtos',       route: 'grupos-produtos' },
-  { icon: Building2,      label: 'Filiais',                 route: 'filiais' }
+  { icon: ArrowRightLeft, label: 'Tipo de Entrada e Saída',         route: 'tipos-entrada-saida' },
+  { icon: ShoppingBag,    label: 'Produtos',                         route: 'produtos' },
+  { icon: Layers,         label: 'Grupo de Produtos',                route: 'grupos-produtos' },
+  { icon: Building2,      label: 'Filiais',                          route: 'filiais' },
+  { icon: FileCheck2,     label: 'Aprovações de Entradas Fiscais',   route: 'aprovacoes-entradas-fiscais' }
 ]
 
 export default function Sidebar({ route, onNavigate }) {

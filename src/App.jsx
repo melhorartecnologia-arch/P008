@@ -6,14 +6,16 @@ import Produtos from './pages/Produtos.jsx'
 import EntradasFiscais from './pages/EntradasFiscais.jsx'
 import Filiais from './pages/Filiais.jsx'
 import GruposProdutos from './pages/GruposProdutos.jsx'
+import AprovacoesEntradasFiscais from './pages/AprovacoesEntradasFiscais.jsx'
 
 const ROUTES = {
-  'dashboard':           Dashboard,
-  'entradas-fiscais':    EntradasFiscais,
-  'tipos-entrada-saida': TiposEntradaSaida,
-  'produtos':            Produtos,
-  'grupos-produtos':     GruposProdutos,
-  'filiais':             Filiais
+  'dashboard':                     Dashboard,
+  'entradas-fiscais':              EntradasFiscais,
+  'tipos-entrada-saida':           TiposEntradaSaida,
+  'produtos':                      Produtos,
+  'grupos-produtos':               GruposProdutos,
+  'filiais':                       Filiais,
+  'aprovacoes-entradas-fiscais':   AprovacoesEntradasFiscais
 }
 
 export default function App() {

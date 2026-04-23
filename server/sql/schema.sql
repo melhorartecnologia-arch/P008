@@ -175,3 +175,30 @@ CREATE TABLE IF NOT EXISTS justificativas_entrada_fiscal (
 
 CREATE INDEX IF NOT EXISTS justificativas_entrada_fiscal_ef_idx
   ON justificativas_entrada_fiscal (entrada_fiscal_id);
+
+-- Cadastros: aprovações de entradas fiscais (quem aprovou o documento)
+CREATE TABLE IF NOT EXISTS aprovacoes_entradas_fiscais (
+  id                            SERIAL PRIMARY KEY,
+  codigo_aprovador              VARCHAR(50)  NOT NULL,
+  nome_aprovador                VARCHAR(200),
+  codigo_filial                 VARCHAR(20)  NOT NULL,
+  valor_total_documento         NUMERIC(18,4),
+  data_emissao_documento        DATE,
+  data_escrituracao_documento   DATE,
+  codigo_documento              VARCHAR(20)  NOT NULL,
+  serie_documento               VARCHAR(10),
+  codigo_fornecedor             VARCHAR(50),
+  loja_fornecedor               VARCHAR(20),
+  codigo_pedido_compras         VARCHAR(30),
+  created_at                    TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+  updated_at                    TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS aprovacoes_ef_filial_doc_idx
+  ON aprovacoes_entradas_fiscais (codigo_filial, codigo_documento, serie_documento);
+CREATE INDEX IF NOT EXISTS aprovacoes_ef_aprovador_idx
+  ON aprovacoes_entradas_fiscais (codigo_aprovador);
+CREATE INDEX IF NOT EXISTS aprovacoes_ef_fornecedor_idx
+  ON aprovacoes_entradas_fiscais (codigo_fornecedor);
+CREATE INDEX IF NOT EXISTS aprovacoes_ef_pedido_idx
+  ON aprovacoes_entradas_fiscais (codigo_pedido_compras);
