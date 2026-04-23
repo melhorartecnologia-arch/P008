@@ -185,13 +185,13 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                 <thead>
                   <tr>
                     <th className="col-id">ID</th>
+                    <th style={{ minWidth: 100, textAlign: 'center' }}>Justif.</th>
                     {FIELDS.map((f) => (
                       <th key={f.name} style={{
                         minWidth: f.w,
                         textAlign: f.align === 'right' ? 'right' : 'left'
                       }}>{f.label}</th>
                     ))}
-                    <th style={{ minWidth: 100, textAlign: 'center' }}>Justif.</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -210,6 +210,12 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                       style={{ cursor: 'pointer' }}
                     >
                       <td className="col-id">#{it.id}</td>
+                      <td style={{ textAlign: 'center' }}>
+                        <span className={`just-badge ${it.justificativasCount > 0 ? 'has' : 'empty'}`}>
+                          <MessageSquare size={12} />
+                          {it.justificativasCount || 0}
+                        </span>
+                      </td>
                       {FIELDS.map((f) => (
                         <td key={f.name} style={{
                           textAlign: f.align === 'right' ? 'right' : 'left',
@@ -218,12 +224,6 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                           {formatValue(f, it[f.name])}
                         </td>
                       ))}
-                      <td style={{ textAlign: 'center' }}>
-                        <span className={`just-badge ${it.justificativasCount > 0 ? 'has' : 'empty'}`}>
-                          <MessageSquare size={12} />
-                          {it.justificativasCount || 0}
-                        </span>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
