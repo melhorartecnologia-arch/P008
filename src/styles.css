@@ -1565,3 +1565,31 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: var(--text-2);
   font-weight: 600;
 }
+
+/* Tooltip flutuante mostrado após 2s de hover em linha da tabela de detalhes */
+.row-tooltip {
+  background: #101214;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  max-width: 320px;
+  white-space: normal;
+  z-index: 9999;
+}
+.row-tooltip strong {
+  font-weight: 700;
+  color: #fff;
+}
+.row-tooltip-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}

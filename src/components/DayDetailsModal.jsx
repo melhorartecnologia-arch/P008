@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { X as XIcon, MessageSquarePlus, MessageSquare, Trash2, Send, CalendarDays, Loader2 } from 'lucide-react'
 import { apiGet, apiSend } from '../api.js'
 import { FIELDS, formatValue } from '../pages/entradasFiscaisFields.js'
@@ -52,19 +52,14 @@ const COMBINED_GROUPS = [
       </>
     )
   },
-  {
-    key: 'tipoEntrada',
-    label: 'Tipo de Entrada',
-    minWidth: 180,
-    fields: ['codigoTipoEntrada', 'descricaoTipoEntrada'],
-    renderBody: (it) => (
-      <>
-        <span className="doc-line doc-muted">{it.codigoTipoEntrada || '—'}</span>
-        <span className="doc-line doc-main">{it.descricaoTipoEntrada || '—'}</span>
-      </>
-    )
-  }
 ]
+
+// Campos que não aparecem como coluna, mas ficam disponíveis em
+// tooltip quando o mouse descansa 2s sobre a linha.
+const HIDDEN_FIELDS = new Set([
+  'codigoTipoEntrada',
+  'descricaoTipoEntrada'
+])
 
 const GROUP_BY_FIRST_FIELD = new Map(
   COMBINED_GROUPS.map((g) => [g.fields[0], g])
@@ -73,7 +68,10 @@ const COMBINED_FIELD_NAMES = new Set(
   COMBINED_GROUPS.flatMap((g) => g.fields)
 )
 const TOTAL_DATA_COLUMNS =
-  COMBINED_GROUPS.length + (FIELDS.length - COMBINED_FIELD_NAMES.size)
+  COMBINED_GROUPS.length +
+  (FIELDS.length - COMBINED_FIELD_NAMES.size - HIDDEN_FIELDS.size)
+
+const HOVER_DELAY_MS = 2000
 
 const fmtDayLong = (iso) => {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '')
@@ -122,6 +120,9 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
   const [newComment, setNewComment] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  // Tooltip de linha: aparece após 2s de mouse parado
+  const [rowTooltip, setRowTooltip] = useState(null)
+  const hoverTimerRef = useRef(null)
 
   const singleDay = range?.from && range?.from === range?.to
   const headerLabel = singleDay
@@ -145,6 +146,9 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
   }, [range?.from, range?.to, codigoFilial, filter, grupoProdutoId])
 
   useEffect(() => { loadItems() }, [loadItems])
+
+  // Cleanup do timer de tooltip quando o modal fecha
+  useEffect(() => () => clearTimeout(hoverTimerRef.current), [])
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
@@ -254,7 +258,6 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
               <table className="crud-table wide-table">
                 <thead>
                   <tr>
-                    <th className="col-id">ID</th>
                     <th style={{ minWidth: 100, textAlign: 'center' }}>Justif.</th>
                     {FIELDS.map((f) => {
                       const group = GROUP_BY_FIRST_FIELD.get(f.name)
@@ -266,6 +269,7 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                         )
                       }
                       if (COMBINED_FIELD_NAMES.has(f.name)) return null
+                      if (HIDDEN_FIELDS.has(f.name)) return null
                       return (
                         <th key={f.name} style={{
                           minWidth: f.w,
@@ -278,7 +282,7 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                 <tbody>
                   {!loading && items.length === 0 && (
                     <tr>
-                      <td colSpan={TOTAL_DATA_COLUMNS + 2}>
+                      <td colSpan={TOTAL_DATA_COLUMNS + 1}>
                         <div className="empty-state">Nenhum documento fiscal para este dia com os filtros aplicados.</div>
                       </td>
                     </tr>
@@ -288,9 +292,24 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                       key={it.id}
                       className={`details-row ${selectedId === it.id ? 'selected' : ''}`}
                       onClick={() => selectRow(it.id)}
+                      onMouseEnter={(e) => {
+                        const x = e.clientX, y = e.clientY
+                        clearTimeout(hoverTimerRef.current)
+                        hoverTimerRef.current = setTimeout(() => {
+                          setRowTooltip({
+                            id: it.id,
+                            x, y,
+                            codigo: it.codigoTipoEntrada,
+                            descricao: it.descricaoTipoEntrada
+                          })
+                        }, HOVER_DELAY_MS)
+                      }}
+                      onMouseLeave={() => {
+                        clearTimeout(hoverTimerRef.current)
+                        setRowTooltip((prev) => (prev?.id === it.id ? null : prev))
+                      }}
                       style={{ cursor: 'pointer' }}
                     >
-                      <td className="col-id">#{it.id}</td>
                       <td style={{ textAlign: 'center' }}>
                         <span className={`just-badge ${it.justificativasCount > 0 ? 'has' : 'empty'}`}>
                           <MessageSquare size={12} />
@@ -307,6 +326,7 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                           )
                         }
                         if (COMBINED_FIELD_NAMES.has(f.name)) return null
+                        if (HIDDEN_FIELDS.has(f.name)) return null
                         return (
                           <td key={f.name} style={{
                             textAlign: f.align === 'right' ? 'right' : 'left',
@@ -425,6 +445,23 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
           </div>
         </div>
       </div>
+
+      {rowTooltip && (
+        <div
+          className="row-tooltip"
+          style={{
+            position: 'fixed',
+            left: Math.min(rowTooltip.x + 14, window.innerWidth - 340),
+            top:  Math.min(rowTooltip.y + 14, window.innerHeight - 80)
+          }}
+        >
+          <div className="row-tooltip-label">Tipo de Entrada</div>
+          <div>
+            <strong>{rowTooltip.codigo || '—'}</strong>
+            {rowTooltip.descricao ? ` · ${rowTooltip.descricao}` : ''}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
