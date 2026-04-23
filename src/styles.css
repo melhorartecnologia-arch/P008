@@ -1587,6 +1587,59 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-weight: 500;
 }
 
+/* Aprovações por comprador — tabela compacta dentro do card */
+.aprov-wrap {
+  max-height: 320px;
+  overflow: auto;
+  padding: 0 0 6px;
+}
+.aprov-table {
+  font-size: 12px;
+  width: 100%;
+}
+.aprov-table th,
+.aprov-table td {
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+.aprov-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--panel-2);
+  box-shadow: inset 0 -1px 0 var(--border);
+  z-index: 1;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-3);
+}
+.aprov-table tfoot td {
+  position: sticky;
+  bottom: 0;
+  background: var(--panel-2);
+  box-shadow: inset 0 1px 0 var(--border);
+  font-size: 12px;
+}
+.aprov-table tbody tr:hover td { background: #f6f7fa; }
+
+.aprov-name {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.aprov-name strong { font-size: 12.5px; }
+.aprov-name small { color: var(--text-3); font-size: 11px; }
+
+.aprov-net {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+.aprov-net strong { font-size: 12.5px; font-weight: 700; }
+.aprov-net small  { font-size: 10.5px; opacity: 0.85; }
+
 /* VariacaoPorGrupo: células clicáveis */
 .clickable-cell {
   cursor: pointer;

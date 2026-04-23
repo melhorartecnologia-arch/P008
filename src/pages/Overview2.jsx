@@ -3,7 +3,7 @@ import TopBar, {
   PERIOD_THIS_MONTH, PERIOD_LAST_MONTH
 } from '../components/TopBar.jsx'
 import TotalBalance from '../components/TotalBalance.jsx'
-import Performance from '../components/Performance.jsx'
+import AprovacoesPorAprovador from '../components/AprovacoesPorAprovador.jsx'
 import VariacaoPorGrupo from '../components/VariacaoPorGrupo.jsx'
 import NfVariationCard from '../components/NfVariationCard.jsx'
 import DayDetailsModal from '../components/DayDetailsModal.jsx'
@@ -150,7 +150,10 @@ export default function Overview2() {
           filter={totalBalanceFilter}
           codigoFilial={filialCodigo}
         />
-        <Performance />
+        <AprovacoesPorAprovador
+          range={activeRange}
+          codigoFilial={filialCodigo}
+        />
       </section>
 
       <section className="grid row-grupos">

@@ -183,6 +183,155 @@ const UPDATE_SQL = (() => {
           RETURNING id, ${DB_COLS}, created_at, updated_at`
 })()
 
+function readRange(req) {
+  const q = req.query || {}
+  const from = q.from ? String(q.from).slice(0, 10) : null
+  const to   = q.to   ? String(q.to).slice(0, 10)   : null
+  const codigoFilial = q.codigoFilial ? String(q.codigoFilial).trim() : null
+  return { from, to, codigoFilial }
+}
+
+// MÉTRICAS: sumário de aprovações e variação das entradas fiscais
+// relacionadas, agrupado por aprovador (comprador).
+// Aceita ?from=YYYY-MM-DD&to=YYYY-MM-DD&codigoFilial=...
+// O período é aplicado sobre a data_emissao_documento das aprovações.
+// O vínculo com entradas_fiscais é feito por filial + número do
+// documento + série (série NULL/vazia casa com NULL/vazio).
+router.get('/metrics/por-aprovador', async (req, res, next) => {
+  try {
+    const { from, to, codigoFilial } = readRange(req)
+
+    const params = []
+    const whereAef = []
+    const whereEntry = []
+    if (codigoFilial) {
+      params.push(codigoFilial)
+      whereAef.push(`codigo_filial = $${params.length}`)
+      whereEntry.push(`aef.codigo_filial = $${params.length}`)
+    }
+    if (from) {
+      params.push(from)
+      whereAef.push(`data_emissao_documento >= $${params.length}`)
+      whereEntry.push(`aef.data_emissao_documento >= $${params.length}`)
+    }
+    if (to) {
+      params.push(to)
+      whereAef.push(`data_emissao_documento <= $${params.length}`)
+      whereEntry.push(`aef.data_emissao_documento <= $${params.length}`)
+    }
+    if (from || to) {
+      whereAef.push(`data_emissao_documento IS NOT NULL`)
+      whereEntry.push(`aef.data_emissao_documento IS NOT NULL`)
+    }
+
+    const whereAefSql = whereAef.length ? `WHERE ${whereAef.join(' AND ')}` : ''
+    const whereEntrySql = whereEntry.length ? `AND ${whereEntry.join(' AND ')}` : ''
+
+    const sql = `
+      WITH approvals AS (
+        SELECT
+          codigo_aprovador,
+          MAX(nome_aprovador)                   AS nome_aprovador,
+          COUNT(*)::int                         AS docs_aprovados,
+          COALESCE(SUM(valor_total_documento), 0)::numeric AS valor_aprovado_total
+        FROM aprovacoes_entradas_fiscais
+        ${whereAefSql}
+        GROUP BY codigo_aprovador
+      ),
+      entries AS (
+        SELECT
+          aef.codigo_aprovador,
+          COUNT(ef.id)::int AS itens_fiscais,
+          COALESCE(SUM(CASE
+            WHEN ef.valor_nota_fiscal < ef.valor_negociado_compras
+            THEN ef.quantidade_escriturada * (ef.valor_negociado_compras - ef.valor_nota_fiscal)
+            ELSE 0 END), 0)::numeric AS savings,
+          COALESCE(SUM(CASE
+            WHEN ef.valor_nota_fiscal > ef.valor_negociado_compras
+            THEN ef.quantidade_escriturada * (ef.valor_nota_fiscal - ef.valor_negociado_compras)
+            ELSE 0 END), 0)::numeric AS overspend,
+          COALESCE(SUM(ef.quantidade_escriturada * ef.valor_negociado_compras), 0)::numeric AS valor_base,
+          COUNT(*) FILTER (
+            WHERE ef.valor_nota_fiscal < ef.valor_negociado_compras
+          )::int AS lt_count,
+          COUNT(*) FILTER (
+            WHERE ef.valor_nota_fiscal > ef.valor_negociado_compras
+          )::int AS gt_count
+        FROM aprovacoes_entradas_fiscais aef
+        INNER JOIN entradas_fiscais ef
+          ON ef.codigo_filial = aef.codigo_filial
+         AND ef.numero_documento_fiscal = aef.codigo_documento
+         AND COALESCE(ef.serie_documento_fiscal, '') = COALESCE(aef.serie_documento, '')
+        WHERE ef.codigo_tipo_entrada IN (
+                SELECT codigo FROM tipos_entrada_saida WHERE considera_analise = TRUE
+              )
+          AND ef.valor_nota_fiscal IS NOT NULL
+          AND ef.valor_negociado_compras IS NOT NULL
+          AND ef.quantidade_escriturada IS NOT NULL
+          ${whereEntrySql}
+        GROUP BY aef.codigo_aprovador
+      )
+      SELECT
+        a.codigo_aprovador,
+        a.nome_aprovador,
+        a.docs_aprovados,
+        a.valor_aprovado_total,
+        COALESCE(e.itens_fiscais, 0) AS itens_fiscais,
+        COALESCE(e.savings, 0)       AS savings,
+        COALESCE(e.overspend, 0)     AS overspend,
+        COALESCE(e.valor_base, 0)    AS valor_base,
+        COALESCE(e.lt_count, 0)      AS lt_count,
+        COALESCE(e.gt_count, 0)      AS gt_count
+      FROM approvals a
+      LEFT JOIN entries e USING (codigo_aprovador)
+      ORDER BY a.valor_aprovado_total DESC NULLS LAST, a.codigo_aprovador ASC
+    `
+
+    const { rows } = await query(sql, params)
+    const out = rows.map((r) => {
+      const savings   = Number(r.savings)
+      const overspend = Number(r.overspend)
+      const base      = Number(r.valor_base)
+      const net       = savings - overspend
+      const pct       = base > 0 ? (net / base) * 100 : null
+      return {
+        codigoAprovador:      r.codigo_aprovador,
+        nomeAprovador:        r.nome_aprovador,
+        docsAprovados:        Number(r.docs_aprovados),
+        valorAprovadoTotal:   Number(r.valor_aprovado_total),
+        itensFiscais:         Number(r.itens_fiscais),
+        ltCount:              Number(r.lt_count),
+        gtCount:              Number(r.gt_count),
+        savings,
+        overspend,
+        net,
+        valorBase:            base,
+        variacaoPercentual:   pct
+      }
+    })
+
+    // Totais gerais (linha de rodapé no frontend)
+    const totals = out.reduce((acc, r) => {
+      acc.docsAprovados      += r.docsAprovados
+      acc.valorAprovadoTotal += r.valorAprovadoTotal
+      acc.itensFiscais       += r.itensFiscais
+      acc.savings            += r.savings
+      acc.overspend          += r.overspend
+      acc.valorBase          += r.valorBase
+      return acc
+    }, {
+      docsAprovados: 0, valorAprovadoTotal: 0, itensFiscais: 0,
+      savings: 0, overspend: 0, valorBase: 0
+    })
+    totals.net = totals.savings - totals.overspend
+    totals.variacaoPercentual = totals.valorBase > 0
+      ? (totals.net / totals.valorBase) * 100
+      : null
+
+    res.json({ rows: out, totals })
+  } catch (err) { next(err) }
+})
+
 // LIST
 router.get('/', async (req, res, next) => {
   try {
