@@ -1593,3 +1593,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   text-transform: uppercase;
   margin-bottom: 3px;
 }
+
+/* Variante right-aligned das células empilhadas (numéricas) */
+.doc-cell.doc-cell-num,
+.doc-cell.doc-cell-num .doc-line {
+  text-align: right;
+}
+.doc-cell.doc-cell-num .doc-line.doc-main {
+  font-variant-numeric: tabular-nums;
+}
+.doc-cell.doc-cell-num .doc-line.doc-muted {
+  font-variant-numeric: tabular-nums;
+}

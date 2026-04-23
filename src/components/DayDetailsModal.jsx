@@ -5,6 +5,13 @@ import { FIELDS, formatValue } from '../pages/entradasFiscaisFields.js'
 
 const BASE = import.meta.env.VITE_API_BASE || '/api'
 
+const fmtMoney = (n) => (n != null && n !== '')
+  ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n))
+  : '—'
+const fmtQty = (n) => (n != null && n !== '')
+  ? new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 4 }).format(Number(n))
+  : '—'
+
 // Colunas que são fundidas em uma única célula empilhada na tabela
 // de detalhes. O `fields[0]` define onde o cluster é renderizado
 // (posição original do primeiro campo dentro de FIELDS).
@@ -52,6 +59,32 @@ const COMBINED_GROUPS = [
       </>
     )
   },
+  {
+    key: 'nfFornecedor',
+    label: 'NF (fornecedor)',
+    minWidth: 140,
+    align: 'right',
+    fields: ['quantidadeEscriturada', 'valorNotaFiscal'],
+    renderBody: (it) => (
+      <>
+        <span className="doc-line doc-main">{fmtMoney(it.valorNotaFiscal)}</span>
+        <span className="doc-line doc-muted">Qtd {fmtQty(it.quantidadeEscriturada)}</span>
+      </>
+    )
+  },
+  {
+    key: 'negociado',
+    label: 'Negociado (compras)',
+    minWidth: 140,
+    align: 'right',
+    fields: ['quantidadePedidoCompras', 'valorNegociadoCompras'],
+    renderBody: (it) => (
+      <>
+        <span className="doc-line doc-main">{fmtMoney(it.valorNegociadoCompras)}</span>
+        <span className="doc-line doc-muted">Qtd {fmtQty(it.quantidadePedidoCompras)}</span>
+      </>
+    )
+  }
 ]
 
 // Campos que não aparecem como coluna, mas ficam disponíveis em
@@ -263,7 +296,10 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                       const group = GROUP_BY_FIRST_FIELD.get(f.name)
                       if (group) {
                         return (
-                          <th key={`g-${group.key}`} style={{ minWidth: group.minWidth }}>
+                          <th key={`g-${group.key}`} style={{
+                            minWidth: group.minWidth,
+                            textAlign: group.align === 'right' ? 'right' : 'left'
+                          }}>
                             {group.label}
                           </th>
                         )
@@ -320,7 +356,10 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                         const group = GROUP_BY_FIRST_FIELD.get(f.name)
                         if (group) {
                           return (
-                            <td key={`g-${group.key}`} className="doc-cell">
+                            <td
+                              key={`g-${group.key}`}
+                              className={`doc-cell ${group.align === 'right' ? 'doc-cell-num' : ''}`}
+                            >
                               {group.renderBody(it)}
                             </td>
                           )
