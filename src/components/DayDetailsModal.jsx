@@ -42,6 +42,25 @@ const computeVariation = (it) => {
   return qtdNf * (valNeg - valNf)
 }
 
+// Variação percentual baseada nos valores unitários:
+//   (valor_negociado_compras − valor_nota_fiscal) / valor_negociado_compras
+const computeVariationPct = (it) => {
+  const valNeg = Number(it.valorNegociadoCompras)
+  const valNf  = Number(it.valorNotaFiscal)
+  if (!Number.isFinite(valNeg) || valNeg === 0) return null
+  if (!Number.isFinite(valNf)) return null
+  return ((valNeg - valNf) / valNeg) * 100
+}
+
+const fmtPct = (p) => {
+  if (p == null || !Number.isFinite(p)) return '—'
+  const sign = p > 0 ? '+' : ''
+  return `${sign}${new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(p)}%`
+}
+
 // Colunas que são fundidas em uma única célula empilhada na tabela
 // de detalhes. O `fields[0]` define onde o cluster é renderizado
 // (posição original do primeiro campo dentro de FIELDS).
@@ -126,13 +145,19 @@ const EXTRA_AFTER_GROUP = {
       minWidth: 130,
       align: 'right',
       render: (it) => {
-        const v = computeVariation(it)
+        const v   = computeVariation(it)
+        const pct = computeVariationPct(it)
         if (v == null) return <span className="doc-line doc-muted">—</span>
         const tone = v > 0 ? 'ok' : v < 0 ? 'bad' : 'neutral'
         return (
-          <span className={`doc-line doc-main var-${tone}`}>
-            {fmtMoney(v)}
-          </span>
+          <>
+            <span className={`doc-line doc-main var-${tone}`}>
+              {fmtMoney(v)}
+            </span>
+            <span className={`doc-line doc-muted var-${tone}`}>
+              {fmtPct(pct)}
+            </span>
+          </>
         )
       }
     }
