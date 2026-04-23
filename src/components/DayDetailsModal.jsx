@@ -5,9 +5,25 @@ import { FIELDS, formatValue } from '../pages/entradasFiscaisFields.js'
 
 const BASE = import.meta.env.VITE_API_BASE || '/api'
 
+// Nas tabelas de detalhes os valores monetários usam 4 casas decimais
+// para preservar a precisão unitária (ex.: R$ 1,2345).
 const fmtMoney = (n) => (n != null && n !== '')
-  ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(n))
+  ? new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4
+    }).format(Number(n))
   : '—'
+const fmtMoneyPlain = (v) => {
+  if (v === null || v === undefined || v === '') return ''
+  const n = Number(v)
+  if (!Number.isFinite(n)) return String(v)
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 4,
+    maximumFractionDigits: 4
+  }).format(n)
+}
 const fmtQty = (n) => (n != null && n !== '')
   ? new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 4 }).format(Number(n))
   : '—'
@@ -431,7 +447,7 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                             textAlign: f.align === 'right' ? 'right' : 'left',
                             fontVariantNumeric: f.kind === 'numeric' ? 'tabular-nums' : 'normal'
                           }}>
-                            {formatValue(f, it[f.name])}
+                            {f.money ? fmtMoneyPlain(it[f.name]) : formatValue(f, it[f.name])}
                           </td>
                         )
                       })}
@@ -466,11 +482,11 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                   <div className="details-divergence">
                     <div className="details-divergence-row">
                       <span>Valor NF</span>
-                      <strong>{formatValue({ kind: 'numeric', money: true }, selected.valorNotaFiscal)}</strong>
+                      <strong>{fmtMoneyPlain(selected.valorNotaFiscal)}</strong>
                     </div>
                     <div className="details-divergence-row">
                       <span>Valor negociado</span>
-                      <strong>{formatValue({ kind: 'numeric', money: true }, selected.valorNegociadoCompras)}</strong>
+                      <strong>{fmtMoneyPlain(selected.valorNegociadoCompras)}</strong>
                     </div>
                     <div className="details-divergence-row">
                       <span>Qtd escriturada</span>
