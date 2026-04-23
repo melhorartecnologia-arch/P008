@@ -1,5 +1,8 @@
-import { Fragment, useEffect, useRef, useState, useCallback } from 'react'
-import { X as XIcon, MessageSquarePlus, MessageSquare, Trash2, Send, CalendarDays, Loader2 } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
+import {
+  X as XIcon, MessageSquarePlus, MessageSquare, Trash2, Send, CalendarDays, Loader2,
+  ChevronUp, ChevronDown, ChevronsUpDown
+} from 'lucide-react'
 import { apiGet, apiSend } from '../api.js'
 import { FIELDS, formatValue } from '../pages/entradasFiscaisFields.js'
 
@@ -177,12 +180,121 @@ const GROUP_BY_FIRST_FIELD = new Map(
 const COMBINED_FIELD_NAMES = new Set(
   COMBINED_GROUPS.flatMap((g) => g.fields)
 )
-const TOTAL_EXTRA_COLUMNS = Object.values(EXTRA_AFTER_GROUP)
-  .reduce((n, arr) => n + arr.length, 0)
-const TOTAL_DATA_COLUMNS =
-  COMBINED_GROUPS.length +
-  TOTAL_EXTRA_COLUMNS +
-  (FIELDS.length - COMBINED_FIELD_NAMES.size - HIDDEN_FIELDS.size)
+// Campo primário usado para ordenar quando a coluna é um grupo fundido.
+const GROUP_SORT_FIELD = {
+  documento: 'numeroDocumentoFiscal',
+  produto: 'descricaoProduto',
+  pedido: 'numeroPedidoCompras',
+  nfFornecedor: 'valorNotaFiscal',
+  negociado: 'valorNegociadoCompras'
+}
+
+// Acessores de colunas calculadas (usadas para ordenação e busca).
+const EXTRA_ACCESSORS = {
+  variacaoMonetaria: (it) => computeVariation(it)
+}
+
+// Monta a lista plana de colunas na mesma ordem em que é renderizada,
+// com metadados para ordenação (accessor) e filtro (matchText).
+function buildColumns() {
+  const cols = []
+
+  cols.push({
+    key: '__justif',
+    label: 'Justif.',
+    minWidth: 100,
+    align: 'center',
+    kind: 'number',
+    accessor: (it) => it.justificativasCount || 0,
+    matchText: (it, needle) => String(it.justificativasCount || 0).includes(needle),
+    renderBody: (it) => (
+      <span className={`just-badge ${it.justificativasCount > 0 ? 'has' : 'empty'}`}>
+        <MessageSquare size={12} />
+        {it.justificativasCount || 0}
+      </span>
+    ),
+    tdStyle: { textAlign: 'center' }
+  })
+
+  for (const f of FIELDS) {
+    const group = GROUP_BY_FIRST_FIELD.get(f.name)
+    if (group) {
+      const sortField = GROUP_SORT_FIELD[group.key] || group.fields[0]
+      const isNumeric = group.align === 'right'
+      cols.push({
+        key: `g-${group.key}`,
+        label: group.label,
+        minWidth: group.minWidth,
+        align: group.align,
+        kind: isNumeric ? 'number' : 'string',
+        accessor: (it) => {
+          const v = it[sortField]
+          if (v == null || v === '') return null
+          return isNumeric ? Number(v) : v
+        },
+        matchText: (it, needle) => group.fields.some((fn) => {
+          const v = it[fn]
+          return v != null && String(v).toLowerCase().includes(needle)
+        }),
+        renderBody: group.renderBody,
+        tdClassName: `doc-cell ${isNumeric ? 'doc-cell-num' : ''}`
+      })
+      for (const ex of EXTRA_AFTER_GROUP[group.key] || []) {
+        const accessor = EXTRA_ACCESSORS[ex.key]
+        cols.push({
+          key: ex.key,
+          label: ex.label,
+          minWidth: ex.minWidth,
+          align: ex.align,
+          kind: 'number',
+          accessor,
+          matchText: accessor
+            ? (it, needle) => {
+                const v = accessor(it)
+                if (v == null) return false
+                return fmtMoney2(v).toLowerCase().includes(needle)
+                    || String(v).toLowerCase().includes(needle)
+              }
+            : undefined,
+          renderBody: ex.render,
+          tdClassName: `doc-cell ${ex.align === 'right' ? 'doc-cell-num' : ''}`
+        })
+      }
+      continue
+    }
+    if (COMBINED_FIELD_NAMES.has(f.name)) continue
+    if (HIDDEN_FIELDS.has(f.name)) continue
+    cols.push({
+      key: f.name,
+      label: f.label,
+      minWidth: f.w,
+      align: f.align,
+      kind: f.kind === 'numeric' ? 'number' : f.kind === 'date' ? 'date' : 'string',
+      accessor: (it) => {
+        const v = it[f.name]
+        if (v == null || v === '') return null
+        return f.kind === 'numeric' ? Number(v) : v
+      },
+      matchText: (it, needle) => {
+        const v = it[f.name]
+        if (v == null) return false
+        if (String(v).toLowerCase().includes(needle)) return true
+        const formatted = f.money ? fmtMoneyPlain2(v) : formatValue(f, v)
+        return String(formatted).toLowerCase().includes(needle)
+      },
+      renderBody: (it) => (
+        f.money ? fmtMoneyPlain2(it[f.name]) : formatValue(f, it[f.name])
+      ),
+      tdStyle: {
+        textAlign: f.align === 'right' ? 'right' : 'left',
+        fontVariantNumeric: f.kind === 'numeric' ? 'tabular-nums' : 'normal'
+      }
+    })
+  }
+  return cols
+}
+
+const COLUMNS = buildColumns()
 
 const HOVER_DELAY_MS = 2000
 
@@ -233,9 +345,57 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
   const [newComment, setNewComment] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  // Ordenação e filtros por coluna (client-side, como na DataTable).
+  const [sort, setSort] = useState(null)
+  const [filters, setFilters] = useState({})
   // Tooltip de linha: aparece após 2s de mouse parado
   const [rowTooltip, setRowTooltip] = useState(null)
   const hoverTimerRef = useRef(null)
+
+  const activeFilters = useMemo(
+    () => Object.entries(filters).filter(([, v]) => v && String(v).trim() !== ''),
+    [filters]
+  )
+
+  const displayItems = useMemo(() => {
+    let out = items
+    if (activeFilters.length) {
+      out = out.filter((it) => activeFilters.every(([key, value]) => {
+        const col = COLUMNS.find((c) => c.key === key)
+        if (!col?.matchText) return true
+        return col.matchText(it, String(value).toLowerCase())
+      }))
+    }
+    if (sort) {
+      const col = COLUMNS.find((c) => c.key === sort.key)
+      if (col?.accessor) {
+        const mul = sort.dir === 'desc' ? -1 : 1
+        out = [...out].sort((a, b) => {
+          const av = col.accessor(a)
+          const bv = col.accessor(b)
+          if (av === bv) return 0
+          if (av == null) return 1
+          if (bv == null) return -1
+          if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * mul
+          const as = String(av).toLowerCase()
+          const bs = String(bv).toLowerCase()
+          return as < bs ? -mul : as > bs ? mul : 0
+        })
+      }
+    }
+    return out
+  }, [items, activeFilters, sort])
+
+  function toggleSort(key) {
+    setSort((prev) => {
+      if (!prev || prev.key !== key) return { key, dir: 'asc' }
+      if (prev.dir === 'asc') return { key, dir: 'desc' }
+      return null
+    })
+  }
+  function setFilter(key, value) {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+  }
 
   const singleDay = range?.from && range?.from === range?.to
   const headerLabel = singleDay
@@ -346,7 +506,11 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                 : <>Detalhes de {headerLabel}</>}
             </h2>
             <p>
-              {loading ? 'Carregando…' : `${items.length} documento${items.length === 1 ? '' : 's'} fiscal(is)`}
+              {loading
+                ? 'Carregando…'
+                : activeFilters.length
+                  ? `${displayItems.length} de ${items.length} documento${items.length === 1 ? '' : 's'} fiscal(is)`
+                  : `${items.length} documento${items.length === 1 ? '' : 's'} fiscal(is)`}
               {filter?.label && <> · filtro: <strong>{filter.label}</strong></>}
               {codigoFilial && <> · filial: <strong>{codigoFilial}</strong></>}
             </p>
@@ -371,50 +535,72 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
               <table className="crud-table wide-table">
                 <thead>
                   <tr>
-                    <th style={{ minWidth: 100, textAlign: 'center' }}>Justif.</th>
-                    {FIELDS.map((f) => {
-                      const group = GROUP_BY_FIRST_FIELD.get(f.name)
-                      if (group) {
-                        const extras = EXTRA_AFTER_GROUP[group.key] || []
-                        return (
-                          <Fragment key={`g-${group.key}`}>
-                            <th style={{
-                              minWidth: group.minWidth,
-                              textAlign: group.align === 'right' ? 'right' : 'left'
-                            }}>
-                              {group.label}
-                            </th>
-                            {extras.map((ex) => (
-                              <th key={ex.key} style={{
-                                minWidth: ex.minWidth,
-                                textAlign: ex.align === 'right' ? 'right' : 'left'
-                              }}>
-                                {ex.label}
-                              </th>
-                            ))}
-                          </Fragment>
-                        )
-                      }
-                      if (COMBINED_FIELD_NAMES.has(f.name)) return null
-                      if (HIDDEN_FIELDS.has(f.name)) return null
+                    {COLUMNS.map((col) => {
+                      const isActive = sort?.key === col.key
+                      const textAlign = col.align === 'right' ? 'right'
+                                      : col.align === 'center' ? 'center' : 'left'
                       return (
-                        <th key={f.name} style={{
-                          minWidth: f.w,
-                          textAlign: f.align === 'right' ? 'right' : 'left'
-                        }}>{f.label}</th>
+                        <th
+                          key={col.key}
+                          style={{
+                            minWidth: col.minWidth,
+                            textAlign,
+                            cursor: 'pointer',
+                            userSelect: 'none'
+                          }}
+                          onClick={() => toggleSort(col.key)}
+                          aria-sort={isActive ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+                        >
+                          <span className="th-inner" style={{
+                            justifyContent: col.align === 'right' ? 'flex-end'
+                                          : col.align === 'center' ? 'center' : 'flex-start'
+                          }}>
+                            <span>{col.label}</span>
+                            <span className={`sort-ind ${isActive ? '' : 'sort-ind-dim'}`}>
+                              {isActive
+                                ? (sort.dir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)
+                                : <ChevronsUpDown size={12} />}
+                            </span>
+                          </span>
+                        </th>
                       )
                     })}
                   </tr>
+                  <tr className="filter-row">
+                    {COLUMNS.map((col) => (
+                      <th
+                        key={col.key}
+                        className="filter-cell"
+                        style={{ minWidth: col.minWidth }}
+                      >
+                        {col.matchText
+                          ? <input
+                              type="text"
+                              placeholder="filtrar…"
+                              value={filters[col.key] ?? ''}
+                              onChange={(e) => setFilter(col.key, e.target.value)}
+                              onClick={(e) => e.stopPropagation()}
+                              className="col-filter-input"
+                            />
+                          : <span className="filter-placeholder" />
+                        }
+                      </th>
+                    ))}
+                  </tr>
                 </thead>
                 <tbody>
-                  {!loading && items.length === 0 && (
+                  {!loading && displayItems.length === 0 && (
                     <tr>
-                      <td colSpan={TOTAL_DATA_COLUMNS + 1}>
-                        <div className="empty-state">Nenhum documento fiscal para este dia com os filtros aplicados.</div>
+                      <td colSpan={COLUMNS.length}>
+                        <div className="empty-state">
+                          {activeFilters.length
+                            ? 'Nenhum documento fiscal atende aos filtros aplicados.'
+                            : 'Nenhum documento fiscal para este dia com os filtros aplicados.'}
+                        </div>
                       </td>
                     </tr>
                   )}
-                  {items.map((it) => (
+                  {displayItems.map((it) => (
                     <tr
                       key={it.id}
                       className={`details-row ${selectedId === it.id ? 'selected' : ''}`}
@@ -437,45 +623,15 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                       }}
                       style={{ cursor: 'pointer' }}
                     >
-                      <td style={{ textAlign: 'center' }}>
-                        <span className={`just-badge ${it.justificativasCount > 0 ? 'has' : 'empty'}`}>
-                          <MessageSquare size={12} />
-                          {it.justificativasCount || 0}
-                        </span>
-                      </td>
-                      {FIELDS.map((f) => {
-                        const group = GROUP_BY_FIRST_FIELD.get(f.name)
-                        if (group) {
-                          const extras = EXTRA_AFTER_GROUP[group.key] || []
-                          return (
-                            <Fragment key={`g-${group.key}`}>
-                              <td
-                                className={`doc-cell ${group.align === 'right' ? 'doc-cell-num' : ''}`}
-                              >
-                                {group.renderBody(it)}
-                              </td>
-                              {extras.map((ex) => (
-                                <td
-                                  key={ex.key}
-                                  className={`doc-cell ${ex.align === 'right' ? 'doc-cell-num' : ''}`}
-                                >
-                                  {ex.render(it)}
-                                </td>
-                              ))}
-                            </Fragment>
-                          )
-                        }
-                        if (COMBINED_FIELD_NAMES.has(f.name)) return null
-                        if (HIDDEN_FIELDS.has(f.name)) return null
-                        return (
-                          <td key={f.name} style={{
-                            textAlign: f.align === 'right' ? 'right' : 'left',
-                            fontVariantNumeric: f.kind === 'numeric' ? 'tabular-nums' : 'normal'
-                          }}>
-                            {f.money ? fmtMoneyPlain2(it[f.name]) : formatValue(f, it[f.name])}
-                          </td>
-                        )
-                      })}
+                      {COLUMNS.map((col) => (
+                        <td
+                          key={col.key}
+                          className={col.tdClassName || ''}
+                          style={col.tdStyle}
+                        >
+                          {col.renderBody(it)}
+                        </td>
+                      ))}
                     </tr>
                   ))}
                 </tbody>
