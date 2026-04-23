@@ -180,19 +180,46 @@ const GROUP_BY_FIRST_FIELD = new Map(
 const COMBINED_FIELD_NAMES = new Set(
   COMBINED_GROUPS.flatMap((g) => g.fields)
 )
-// Campo primário usado para ordenar quando a coluna é um grupo fundido.
-const GROUP_SORT_FIELD = {
-  documento: 'numeroDocumentoFiscal',
-  produto: 'descricaoProduto',
-  pedido: 'numeroPedidoCompras',
-  nfFornecedor: 'valorNotaFiscal',
-  negociado: 'valorNegociadoCompras'
+const toNum = (v) => {
+  if (v == null || v === '') return null
+  const n = Number(v)
+  return Number.isFinite(n) ? n : null
 }
 
-// Acessores de colunas calculadas (usadas para ordenação e busca).
-const EXTRA_ACCESSORS = {
-  variacaoMonetaria: (it) => computeVariation(it)
+// Variantes de ordenação por coluna fundida. A primeira entrada é a
+// ordem padrão; as demais ficam acessíveis via mini-botões no cabeçalho.
+const GROUP_VARIANTS = {
+  documento: [
+    { key: 'nf',     label: 'nº NF', accessor: (it) => it.numeroDocumentoFiscal },
+    { key: 'filial', label: 'filial', accessor: (it) => it.codigoFilial }
+  ],
+  produto: [
+    { key: 'desc', label: 'descrição', accessor: (it) => it.descricaoProduto },
+    { key: 'cod',  label: 'código',    accessor: (it) => it.codigoProduto }
+  ],
+  pedido: [
+    { key: 'num',  label: 'nº',   accessor: (it) => it.numeroPedidoCompras },
+    { key: 'tipo', label: 'tipo', accessor: (it) => it.tipoPedidoCompras }
+  ],
+  nfFornecedor: [
+    { key: 'valor', label: 'valor', accessor: (it) => toNum(it.valorNotaFiscal) },
+    { key: 'qtd',   label: 'qtd',   accessor: (it) => toNum(it.quantidadeEscriturada) }
+  ],
+  negociado: [
+    { key: 'valor', label: 'valor', accessor: (it) => toNum(it.valorNegociadoCompras) },
+    { key: 'qtd',   label: 'qtd',   accessor: (it) => toNum(it.quantidadePedidoCompras) }
+  ]
 }
+
+// Variantes para colunas calculadas (Variação = valor em R$ + percentual).
+const EXTRA_VARIANTS = {
+  variacaoMonetaria: [
+    { key: 'rs',  label: 'R$', accessor: (it) => computeVariation(it) },
+    { key: 'pct', label: '%',  accessor: (it) => computeVariationPct(it) }
+  ]
+}
+
+const DEFAULT_VARIANT = '__default__'
 
 // Monta a lista plana de colunas na mesma ordem em que é renderizada,
 // com metadados para ordenação (accessor) e filtro (matchText).
@@ -205,7 +232,9 @@ function buildColumns() {
     minWidth: 100,
     align: 'center',
     kind: 'number',
-    accessor: (it) => it.justificativasCount || 0,
+    sortVariants: [
+      { key: DEFAULT_VARIANT, label: '', accessor: (it) => it.justificativasCount || 0 }
+    ],
     matchText: (it, needle) => String(it.justificativasCount || 0).includes(needle),
     renderBody: (it) => (
       <span className={`just-badge ${it.justificativasCount > 0 ? 'has' : 'empty'}`}>
@@ -219,19 +248,22 @@ function buildColumns() {
   for (const f of FIELDS) {
     const group = GROUP_BY_FIRST_FIELD.get(f.name)
     if (group) {
-      const sortField = GROUP_SORT_FIELD[group.key] || group.fields[0]
       const isNumeric = group.align === 'right'
+      const variants = GROUP_VARIANTS[group.key] || [
+        { key: DEFAULT_VARIANT, label: '',
+          accessor: (it) => {
+            const v = it[group.fields[0]]
+            if (v == null || v === '') return null
+            return isNumeric ? Number(v) : v
+          } }
+      ]
       cols.push({
         key: `g-${group.key}`,
         label: group.label,
         minWidth: group.minWidth,
         align: group.align,
         kind: isNumeric ? 'number' : 'string',
-        accessor: (it) => {
-          const v = it[sortField]
-          if (v == null || v === '') return null
-          return isNumeric ? Number(v) : v
-        },
+        sortVariants: variants,
         matchText: (it, needle) => group.fields.some((fn) => {
           const v = it[fn]
           return v != null && String(v).toLowerCase().includes(needle)
@@ -240,17 +272,20 @@ function buildColumns() {
         tdClassName: `doc-cell ${isNumeric ? 'doc-cell-num' : ''}`
       })
       for (const ex of EXTRA_AFTER_GROUP[group.key] || []) {
-        const accessor = EXTRA_ACCESSORS[ex.key]
+        const variants = EXTRA_VARIANTS[ex.key] || [
+          { key: DEFAULT_VARIANT, label: '', accessor: () => null }
+        ]
+        const mainAccessor = variants[0].accessor
         cols.push({
           key: ex.key,
           label: ex.label,
           minWidth: ex.minWidth,
           align: ex.align,
           kind: 'number',
-          accessor,
-          matchText: accessor
+          sortVariants: variants,
+          matchText: mainAccessor
             ? (it, needle) => {
-                const v = accessor(it)
+                const v = mainAccessor(it)
                 if (v == null) return false
                 return fmtMoney2(v).toLowerCase().includes(needle)
                     || String(v).toLowerCase().includes(needle)
@@ -270,11 +305,14 @@ function buildColumns() {
       minWidth: f.w,
       align: f.align,
       kind: f.kind === 'numeric' ? 'number' : f.kind === 'date' ? 'date' : 'string',
-      accessor: (it) => {
-        const v = it[f.name]
-        if (v == null || v === '') return null
-        return f.kind === 'numeric' ? Number(v) : v
-      },
+      sortVariants: [
+        { key: DEFAULT_VARIANT, label: '',
+          accessor: (it) => {
+            const v = it[f.name]
+            if (v == null || v === '') return null
+            return f.kind === 'numeric' ? Number(v) : v
+          } }
+      ],
       matchText: (it, needle) => {
         const v = it[f.name]
         if (v == null) return false
@@ -368,11 +406,13 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
     }
     if (sort) {
       const col = COLUMNS.find((c) => c.key === sort.key)
-      if (col?.accessor) {
+      const variant = col?.sortVariants?.find((v) => v.key === sort.variant)
+                   || col?.sortVariants?.[0]
+      if (variant?.accessor) {
         const mul = sort.dir === 'desc' ? -1 : 1
         out = [...out].sort((a, b) => {
-          const av = col.accessor(a)
-          const bv = col.accessor(b)
+          const av = variant.accessor(a)
+          const bv = variant.accessor(b)
           if (av === bv) return 0
           if (av == null) return 1
           if (bv == null) return -1
@@ -386,10 +426,17 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
     return out
   }, [items, activeFilters, sort])
 
-  function toggleSort(key) {
+  // Alterna ordenação por coluna + variante.
+  // Ciclo:
+  //   nada          → asc (variante pedida)
+  //   asc  mesma    → desc
+  //   desc mesma    → nada
+  //   variante outra → asc (variante nova)
+  function toggleSort(key, variant = DEFAULT_VARIANT) {
     setSort((prev) => {
-      if (!prev || prev.key !== key) return { key, dir: 'asc' }
-      if (prev.dir === 'asc') return { key, dir: 'desc' }
+      if (!prev || prev.key !== key) return { key, variant, dir: 'asc' }
+      if (prev.variant !== variant) return { key, variant, dir: 'asc' }
+      if (prev.dir === 'asc') return { key, variant, dir: 'desc' }
       return null
     })
   }
@@ -536,7 +583,12 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                 <thead>
                   <tr>
                     {COLUMNS.map((col) => {
-                      const isActive = sort?.key === col.key
+                      const variants = col.sortVariants || []
+                      const multi = variants.length > 1
+                      const activeVariantKey = sort?.key === col.key ? sort.variant : null
+                      const isActive = !!activeVariantKey
+                      const justify = col.align === 'right' ? 'flex-end'
+                                    : col.align === 'center' ? 'center' : 'flex-start'
                       const textAlign = col.align === 'right' ? 'right'
                                       : col.align === 'center' ? 'center' : 'left'
                       return (
@@ -545,23 +597,43 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                           style={{
                             minWidth: col.minWidth,
                             textAlign,
-                            cursor: 'pointer',
+                            cursor: multi ? 'default' : 'pointer',
                             userSelect: 'none'
                           }}
-                          onClick={() => toggleSort(col.key)}
+                          onClick={multi ? undefined : () => toggleSort(col.key)}
                           aria-sort={isActive ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
                         >
-                          <span className="th-inner" style={{
-                            justifyContent: col.align === 'right' ? 'flex-end'
-                                          : col.align === 'center' ? 'center' : 'flex-start'
-                          }}>
+                          <span className="th-inner" style={{ justifyContent: justify }}>
                             <span>{col.label}</span>
-                            <span className={`sort-ind ${isActive ? '' : 'sort-ind-dim'}`}>
-                              {isActive
-                                ? (sort.dir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)
-                                : <ChevronsUpDown size={12} />}
-                            </span>
+                            {!multi && (
+                              <span className={`sort-ind ${isActive ? '' : 'sort-ind-dim'}`}>
+                                {isActive
+                                  ? (sort.dir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)
+                                  : <ChevronsUpDown size={12} />}
+                              </span>
+                            )}
                           </span>
+                          {multi && (
+                            <div className="col-variants" style={{ justifyContent: justify }}>
+                              {variants.map((v) => {
+                                const vActive = activeVariantKey === v.key
+                                return (
+                                  <button
+                                    key={v.key}
+                                    type="button"
+                                    className={`col-variant ${vActive ? 'active' : ''}`}
+                                    onClick={(e) => { e.stopPropagation(); toggleSort(col.key, v.key) }}
+                                    title={`Ordenar por ${v.label}`}
+                                  >
+                                    <span>{v.label}</span>
+                                    {vActive
+                                      ? (sort.dir === 'asc' ? <ChevronUp size={10} /> : <ChevronDown size={10} />)
+                                      : <ChevronsUpDown size={10} className="col-variant-dim" />}
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          )}
                         </th>
                       )
                     })}

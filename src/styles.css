@@ -1212,15 +1212,52 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   z-index: 3;
   background: var(--panel-2);
   box-shadow: inset 0 -1px 0 var(--border);
+  vertical-align: top;
 }
-/* Linha de filtros fica logo abaixo da linha de cabeçalho */
+/* Linha de filtros fica logo abaixo da linha de cabeçalho.
+   Usa um valor conservador que cobre cabeçalhos de uma ou duas linhas
+   (com as mini-variantes de ordenação). */
 .details-table-wrap .crud-table thead tr.filter-row th {
   position: sticky;
-  top: 34px;
+  top: 54px;
   z-index: 2;
   background: var(--panel-2);
   box-shadow: inset 0 -1px 0 var(--border);
 }
+
+/* Mini-botões de variantes de ordenação dentro do cabeçalho */
+.col-variants {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.col-variant {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--text-2);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  text-transform: lowercase;
+}
+.col-variant:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.col-variant.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.col-variant .col-variant-dim { opacity: 0.5; }
+.col-variant.active .col-variant-dim { opacity: 1; }
 
 .details-row:hover td { background: #f6f7fa; }
 .details-row.selected td {
