@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { Fragment, useEffect, useRef, useState, useCallback } from 'react'
 import { X as XIcon, MessageSquarePlus, MessageSquare, Trash2, Send, CalendarDays, Loader2 } from 'lucide-react'
 import { apiGet, apiSend } from '../api.js'
 import { FIELDS, formatValue } from '../pages/entradasFiscaisFields.js'
@@ -11,6 +11,20 @@ const fmtMoney = (n) => (n != null && n !== '')
 const fmtQty = (n) => (n != null && n !== '')
   ? new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 4 }).format(Number(n))
   : '—'
+
+// (preço unitário do pedido − preço unitário da NF) × quantidade escriturada
+const computeVariation = (it) => {
+  const qtdPed = Number(it.quantidadePedidoCompras)
+  const valNeg = Number(it.valorNegociadoCompras)
+  const qtdNf  = Number(it.quantidadeEscriturada)
+  const valNf  = Number(it.valorNotaFiscal)
+  if (!Number.isFinite(qtdPed) || qtdPed === 0) return null
+  if (!Number.isFinite(qtdNf)  || qtdNf === 0)  return null
+  if (!Number.isFinite(valNeg) || !Number.isFinite(valNf)) return null
+  const unitPed = valNeg / qtdPed
+  const unitNf  = valNf  / qtdNf
+  return (unitPed - unitNf) * qtdNf
+}
 
 // Colunas que são fundidas em uma única célula empilhada na tabela
 // de detalhes. O `fields[0]` define onde o cluster é renderizado
@@ -87,6 +101,28 @@ const COMBINED_GROUPS = [
   }
 ]
 
+// Colunas calculadas que aparecem logo depois do grupo informado.
+const EXTRA_AFTER_GROUP = {
+  negociado: [
+    {
+      key: 'variacaoMonetaria',
+      label: 'Variação (R$)',
+      minWidth: 130,
+      align: 'right',
+      render: (it) => {
+        const v = computeVariation(it)
+        if (v == null) return <span className="doc-line doc-muted">—</span>
+        const tone = v > 0 ? 'ok' : v < 0 ? 'bad' : 'neutral'
+        return (
+          <span className={`doc-line doc-main var-${tone}`}>
+            {fmtMoney(v)}
+          </span>
+        )
+      }
+    }
+  ]
+}
+
 // Campos que não aparecem como coluna, mas ficam disponíveis em
 // tooltip quando o mouse descansa 2s sobre a linha.
 const HIDDEN_FIELDS = new Set([
@@ -100,8 +136,11 @@ const GROUP_BY_FIRST_FIELD = new Map(
 const COMBINED_FIELD_NAMES = new Set(
   COMBINED_GROUPS.flatMap((g) => g.fields)
 )
+const TOTAL_EXTRA_COLUMNS = Object.values(EXTRA_AFTER_GROUP)
+  .reduce((n, arr) => n + arr.length, 0)
 const TOTAL_DATA_COLUMNS =
   COMBINED_GROUPS.length +
+  TOTAL_EXTRA_COLUMNS +
   (FIELDS.length - COMBINED_FIELD_NAMES.size - HIDDEN_FIELDS.size)
 
 const HOVER_DELAY_MS = 2000
@@ -295,13 +334,24 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                     {FIELDS.map((f) => {
                       const group = GROUP_BY_FIRST_FIELD.get(f.name)
                       if (group) {
+                        const extras = EXTRA_AFTER_GROUP[group.key] || []
                         return (
-                          <th key={`g-${group.key}`} style={{
-                            minWidth: group.minWidth,
-                            textAlign: group.align === 'right' ? 'right' : 'left'
-                          }}>
-                            {group.label}
-                          </th>
+                          <Fragment key={`g-${group.key}`}>
+                            <th style={{
+                              minWidth: group.minWidth,
+                              textAlign: group.align === 'right' ? 'right' : 'left'
+                            }}>
+                              {group.label}
+                            </th>
+                            {extras.map((ex) => (
+                              <th key={ex.key} style={{
+                                minWidth: ex.minWidth,
+                                textAlign: ex.align === 'right' ? 'right' : 'left'
+                              }}>
+                                {ex.label}
+                              </th>
+                            ))}
+                          </Fragment>
                         )
                       }
                       if (COMBINED_FIELD_NAMES.has(f.name)) return null
@@ -355,13 +405,23 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                       {FIELDS.map((f) => {
                         const group = GROUP_BY_FIRST_FIELD.get(f.name)
                         if (group) {
+                          const extras = EXTRA_AFTER_GROUP[group.key] || []
                           return (
-                            <td
-                              key={`g-${group.key}`}
-                              className={`doc-cell ${group.align === 'right' ? 'doc-cell-num' : ''}`}
-                            >
-                              {group.renderBody(it)}
-                            </td>
+                            <Fragment key={`g-${group.key}`}>
+                              <td
+                                className={`doc-cell ${group.align === 'right' ? 'doc-cell-num' : ''}`}
+                              >
+                                {group.renderBody(it)}
+                              </td>
+                              {extras.map((ex) => (
+                                <td
+                                  key={ex.key}
+                                  className={`doc-cell ${ex.align === 'right' ? 'doc-cell-num' : ''}`}
+                                >
+                                  {ex.render(it)}
+                                </td>
+                              ))}
+                            </Fragment>
                           )
                         }
                         if (COMBINED_FIELD_NAMES.has(f.name)) return null

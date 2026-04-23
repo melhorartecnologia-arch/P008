@@ -1605,3 +1605,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .doc-cell.doc-cell-num .doc-line.doc-muted {
   font-variant-numeric: tabular-nums;
 }
+
+/* Variação monetária calculada */
+.doc-line.var-ok      { color: #0f9f5f; }
+.doc-line.var-bad     { color: #c0392b; }
+.doc-line.var-neutral { color: var(--text-2); }
