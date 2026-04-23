@@ -1275,6 +1275,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .just-badge.empty { background: var(--panel-2); color: var(--text-3); }
 .just-badge.has   { background: #fff4e3; color: #b8700e; }
 
+/* Farol por linha na tabela de detalhes: reflete a regra dos cards do dashboard */
+.farol {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 0 0 2px rgba(255, 255, 255, 0.85);
+}
+
 .details-side {
   border-left: 1px solid var(--border);
   background: var(--panel-2);

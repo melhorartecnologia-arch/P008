@@ -221,10 +221,47 @@ const EXTRA_VARIANTS = {
 
 const DEFAULT_VARIANT = '__default__'
 
+// Farol de cada linha seguindo as regras dos 4 cards do dashboard:
+//   NF < Negociado                → verde
+//   NF > Negociado (até 2%)       → amarelo
+//   NF > Negociado (acima de 2%)  → vermelho
+// Empate (NF = Negociado) cai num tom neutro; linhas sem dados
+// ficam cinza-claro.
+const FAROL_NONE = { key: 'none', color: '#c5cad2', label: 'Sem dados suficientes', rank: 9 }
+function trafficLight(it) {
+  const valNeg = Number(it.valorNegociadoCompras)
+  const valNf  = Number(it.valorNotaFiscal)
+  if (!Number.isFinite(valNeg) || valNeg === 0 || !Number.isFinite(valNf)) return FAROL_NONE
+  const pct = ((valNf - valNeg) / valNeg) * 100
+  if (pct < 0)   return { key: 'lt',  color: '#19b26b', label: 'NF < Negociado',             rank: 0 }
+  if (pct === 0) return { key: 'eq',  color: '#98a2b3', label: 'NF = Negociado',             rank: 1 }
+  if (pct <= 2)  return { key: 'le2', color: '#f5c518', label: 'NF > Negociado (até 2%)',    rank: 2 }
+  return            { key: 'gt2',      color: '#c01d22', label: 'NF > Negociado (acima de 2%)', rank: 3 }
+}
+
 // Monta a lista plana de colunas na mesma ordem em que é renderizada,
 // com metadados para ordenação (accessor) e filtro (matchText).
 function buildColumns() {
   const cols = []
+
+  cols.push({
+    key: '__farol',
+    label: 'Status',
+    minWidth: 72,
+    align: 'center',
+    sortVariants: [
+      { key: DEFAULT_VARIANT, label: '', accessor: (it) => trafficLight(it).rank }
+    ],
+    matchText: (it, needle) => {
+      const t = trafficLight(it)
+      return t.label.toLowerCase().includes(needle) || t.key.toLowerCase().includes(needle)
+    },
+    renderBody: (it) => {
+      const t = trafficLight(it)
+      return <span className="farol" title={t.label} style={{ background: t.color }} />
+    },
+    tdStyle: { textAlign: 'center' }
+  })
 
   cols.push({
     key: '__justif',
