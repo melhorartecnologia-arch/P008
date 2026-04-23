@@ -766,20 +766,77 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                     </div>
                   </div>
 
-                  <div className="details-divergence">
-                    <div className="details-divergence-row">
-                      <span>Valor NF</span>
-                      <strong>{fmtMoneyPlain(selected.valorNotaFiscal)}</strong>
-                    </div>
-                    <div className="details-divergence-row">
-                      <span>Valor negociado</span>
-                      <strong>{fmtMoneyPlain(selected.valorNegociadoCompras)}</strong>
-                    </div>
-                    <div className="details-divergence-row">
-                      <span>Qtd escriturada</span>
-                      <strong>{formatValue({ kind: 'numeric' }, selected.quantidadeEscriturada)}</strong>
-                    </div>
-                  </div>
+                  {(() => {
+                    const variation = computeVariation(selected)
+                    const variationPct = computeVariationPct(selected)
+                    const tone = variation == null
+                      ? 'neutral'
+                      : variation > 0 ? 'ok'
+                      : variation < 0 ? 'bad' : 'neutral'
+                    const farol = trafficLight(selected)
+                    const totalNf = toNum(selected.quantidadeEscriturada) != null
+                                 && toNum(selected.valorNotaFiscal) != null
+                      ? selected.quantidadeEscriturada * selected.valorNotaFiscal
+                      : null
+                    const totalNeg = toNum(selected.quantidadeEscriturada) != null
+                                  && toNum(selected.valorNegociadoCompras) != null
+                      ? selected.quantidadeEscriturada * selected.valorNegociadoCompras
+                      : null
+                    return (
+                      <div className="details-divergence">
+                        <div className="details-divergence-section">Valores unitários</div>
+                        <div className="details-divergence-row">
+                          <span>Valor NF (unit.)</span>
+                          <strong>{fmtMoneyPlain(selected.valorNotaFiscal)}</strong>
+                        </div>
+                        <div className="details-divergence-row">
+                          <span>Valor negociado (unit.)</span>
+                          <strong>{fmtMoneyPlain(selected.valorNegociadoCompras)}</strong>
+                        </div>
+
+                        <div className="details-divergence-section">Quantidades</div>
+                        <div className="details-divergence-row">
+                          <span>Qtd escriturada (NF)</span>
+                          <strong>{formatValue({ kind: 'numeric' }, selected.quantidadeEscriturada)}</strong>
+                        </div>
+                        <div className="details-divergence-row">
+                          <span>Qtd pedido (compras)</span>
+                          <strong>{formatValue({ kind: 'numeric' }, selected.quantidadePedidoCompras)}</strong>
+                        </div>
+
+                        <div className="details-divergence-section">Valores totais</div>
+                        <div className="details-divergence-row">
+                          <span>Total NF (qtd × unit.)</span>
+                          <strong>{totalNf != null ? fmtMoneyPlain2(totalNf) : '—'}</strong>
+                        </div>
+                        <div className="details-divergence-row">
+                          <span>Total negociado (qtd × unit.)</span>
+                          <strong>{totalNeg != null ? fmtMoneyPlain2(totalNeg) : '—'}</strong>
+                        </div>
+
+                        <div className="details-divergence-section">Variação</div>
+                        <div className="details-divergence-row">
+                          <span>Variação (R$)</span>
+                          <strong className={`var-${tone}`}>
+                            {variation != null ? fmtMoney2(variation) : '—'}
+                          </strong>
+                        </div>
+                        <div className="details-divergence-row">
+                          <span>Variação (%)</span>
+                          <strong className={`var-${tone}`}>
+                            {fmtPct(variationPct)}
+                          </strong>
+                        </div>
+                        <div className="details-divergence-row">
+                          <span>Status</span>
+                          <strong className="status-line">
+                            <span className="farol" style={{ background: farol.color }} />
+                            {farol.label}
+                          </strong>
+                        </div>
+                      </div>
+                    )
+                  })()}
 
                   <form className="just-form" onSubmit={handleAddComment}>
                     <label htmlFor="just-author">Autor (opcional)</label>

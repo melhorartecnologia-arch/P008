@@ -1335,6 +1335,25 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+.details-divergence-row strong.var-ok      { color: #0f9f5f; }
+.details-divergence-row strong.var-bad     { color: #c0392b; }
+.details-divergence-row strong.var-neutral { color: var(--text-2); }
+.details-divergence-row strong.status-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+}
+
+.details-divergence-section {
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  margin-top: 4px;
+}
+.details-divergence-section:first-child { margin-top: 0; }
 
 .just-form {
   padding: 14px 18px;
