@@ -12,18 +12,18 @@ const fmtQty = (n) => (n != null && n !== '')
   ? new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 4 }).format(Number(n))
   : '—'
 
-// (preço unitário do pedido − preço unitário da NF) × quantidade escriturada
+// Mesma fórmula usada nos cards de variação (server: `computeNfVsNegociado`
+// e `/metrics/variacao-diaria`). `valorNegociadoCompras` e `valorNotaFiscal`
+// já são valores unitários — a variação R$ por documento é:
+//   quantidade_escriturada × (valor_negociado_compras − valor_nota_fiscal)
+// Sinal positivo = economia; negativo = sobrecusto.
 const computeVariation = (it) => {
-  const qtdPed = Number(it.quantidadePedidoCompras)
-  const valNeg = Number(it.valorNegociadoCompras)
   const qtdNf  = Number(it.quantidadeEscriturada)
+  const valNeg = Number(it.valorNegociadoCompras)
   const valNf  = Number(it.valorNotaFiscal)
-  if (!Number.isFinite(qtdPed) || qtdPed === 0) return null
-  if (!Number.isFinite(qtdNf)  || qtdNf === 0)  return null
+  if (!Number.isFinite(qtdNf))  return null
   if (!Number.isFinite(valNeg) || !Number.isFinite(valNf)) return null
-  const unitPed = valNeg / qtdPed
-  const unitNf  = valNf  / qtdNf
-  return (unitPed - unitNf) * qtdNf
+  return qtdNf * (valNeg - valNf)
 }
 
 // Colunas que são fundidas em uma única célula empilhada na tabela
