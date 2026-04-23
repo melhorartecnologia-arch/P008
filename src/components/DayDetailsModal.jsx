@@ -246,16 +246,11 @@ function buildColumns() {
 
   cols.push({
     key: '__farol',
-    label: 'Status',
-    minWidth: 72,
+    label: '',
+    minWidth: 28,
     align: 'center',
-    sortVariants: [
-      { key: DEFAULT_VARIANT, label: '', accessor: (it) => trafficLight(it).rank }
-    ],
-    matchText: (it, needle) => {
-      const t = trafficLight(it)
-      return t.label.toLowerCase().includes(needle) || t.key.toLowerCase().includes(needle)
-    },
+    sortable: false,
+    // matchText deliberadamente ausente → sem filtro nesta coluna
     renderBody: (it) => {
       const t = trafficLight(it)
       return <span className="farol" title={t.label} style={{ background: t.color }} />
@@ -621,28 +616,30 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                   <tr>
                     {COLUMNS.map((col) => {
                       const variants = col.sortVariants || []
-                      const multi = variants.length > 1
+                      const sortable = col.sortable !== false && variants.length > 0
+                      const multi = sortable && variants.length > 1
                       const activeVariantKey = sort?.key === col.key ? sort.variant : null
                       const isActive = !!activeVariantKey
                       const justify = col.align === 'right' ? 'flex-end'
                                     : col.align === 'center' ? 'center' : 'flex-start'
                       const textAlign = col.align === 'right' ? 'right'
                                       : col.align === 'center' ? 'center' : 'left'
+                      const clickable = sortable && !multi
                       return (
                         <th
                           key={col.key}
                           style={{
                             minWidth: col.minWidth,
                             textAlign,
-                            cursor: multi ? 'default' : 'pointer',
+                            cursor: clickable ? 'pointer' : 'default',
                             userSelect: 'none'
                           }}
-                          onClick={multi ? undefined : () => toggleSort(col.key)}
+                          onClick={clickable ? () => toggleSort(col.key) : undefined}
                           aria-sort={isActive ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
                         >
                           <span className="th-inner" style={{ justifyContent: justify }}>
                             <span>{col.label}</span>
-                            {!multi && (
+                            {sortable && !multi && (
                               <span className={`sort-ind ${isActive ? '' : 'sort-ind-dim'}`}>
                                 {isActive
                                   ? (sort.dir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)
