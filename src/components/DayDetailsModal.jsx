@@ -5,6 +5,14 @@ import { FIELDS, formatValue } from '../pages/entradasFiscaisFields.js'
 
 const BASE = import.meta.env.VITE_API_BASE || '/api'
 
+// Campos agrupados em uma única coluna "Documento" na tabela de detalhes
+const COMBINED_DOC_FIELDS = new Set([
+  'codigoFilial',
+  'numeroDocumentoFiscal',
+  'serieDocumentoFiscal',
+  'itemDocumentoFiscal'
+])
+
 const fmtDayLong = (iso) => {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '')
   return m ? `${m[3]}/${m[2]}/${m[1]}` : iso
@@ -186,7 +194,8 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                   <tr>
                     <th className="col-id">ID</th>
                     <th style={{ minWidth: 100, textAlign: 'center' }}>Justif.</th>
-                    {FIELDS.map((f) => (
+                    <th style={{ minWidth: 160 }}>Documento</th>
+                    {FIELDS.filter((f) => !COMBINED_DOC_FIELDS.has(f.name)).map((f) => (
                       <th key={f.name} style={{
                         minWidth: f.w,
                         textAlign: f.align === 'right' ? 'right' : 'left'
@@ -197,7 +206,7 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                 <tbody>
                   {!loading && items.length === 0 && (
                     <tr>
-                      <td colSpan={FIELDS.length + 2}>
+                      <td colSpan={FIELDS.length - COMBINED_DOC_FIELDS.size + 3}>
                         <div className="empty-state">Nenhum documento fiscal para este dia com os filtros aplicados.</div>
                       </td>
                     </tr>
@@ -216,7 +225,19 @@ export default function DayDetailsModal({ range, codigoFilial, filter, grupoProd
                           {it.justificativasCount || 0}
                         </span>
                       </td>
-                      {FIELDS.map((f) => (
+                      <td className="doc-cell">
+                        <span className="doc-line doc-muted">
+                          Filial <strong>{it.codigoFilial || '—'}</strong>
+                        </span>
+                        <span className="doc-line doc-main">
+                          NF {it.numeroDocumentoFiscal || '—'}
+                          {' / '}{it.serieDocumentoFiscal || '—'}
+                        </span>
+                        <span className="doc-line doc-muted">
+                          item {it.itemDocumentoFiscal || '—'}
+                        </span>
+                      </td>
+                      {FIELDS.filter((f) => !COMBINED_DOC_FIELDS.has(f.name)).map((f) => (
                         <td key={f.name} style={{
                           textAlign: f.align === 'right' ? 'right' : 'left',
                           fontVariantNumeric: f.kind === 'numeric' ? 'tabular-nums' : 'normal'

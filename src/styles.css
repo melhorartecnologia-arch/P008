@@ -1538,3 +1538,30 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   letter-spacing: 0;
   text-transform: none;
 }
+
+/* Coluna combinada "Documento" na tabela de detalhes */
+.details-table-wrap .doc-cell {
+  line-height: 1.3;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+  white-space: nowrap;
+}
+.doc-line {
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+.doc-line.doc-main {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+.doc-line.doc-muted {
+  font-size: 10.5px;
+  color: var(--text-3);
+  font-weight: 500;
+}
+.doc-line.doc-muted strong {
+  color: var(--text-2);
+  font-weight: 600;
+}
