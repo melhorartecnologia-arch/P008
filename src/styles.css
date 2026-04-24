@@ -13,9 +13,9 @@
   --red: #e5484d;
   --yellow: #f5c518;
   --orange: #f59e0b;
-  --radius: 18px;
-  --radius-sm: 12px;
-  --shadow: 0 1px 0 rgba(16, 24, 40, 0.04), 0 2px 8px rgba(16, 24, 40, 0.04);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 0 rgba(16, 24, 40, 0.025), 0 1px 3px rgba(16, 24, 40, 0.03);
 }
 
 * { box-sizing: border-box; }
@@ -31,6 +31,8 @@ body {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   font-feature-settings: 'cv11', 'ss01', 'ss03';
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
@@ -46,8 +48,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ---------- Sidebar ---------- */
 .sidebar {
   background: var(--panel);
+  border: 1px solid var(--border-2);
   border-radius: var(--radius);
-  padding: 18px 14px;
+  padding: 12px 10px;
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow);
@@ -59,15 +62,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 8px 14px;
+  gap: 8px;
+  padding: 4px 6px 12px;
   font-weight: 700;
-  font-size: 17px;
+  font-size: 14px;
   letter-spacing: -0.015em;
 }
 .logo-mark {
-  width: 30px; height: 30px;
-  border-radius: 9px;
+  width: 26px; height: 26px;
+  border-radius: 8px;
   background: linear-gradient(135deg, #2f6bff 0%, #1f8be0 55%, #19b26b 100%);
   display: flex; align-items: center; justify-content: center;
   color: white;
@@ -97,11 +100,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   margin-top: 6px;
 }
 .nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 10px;
-  border-radius: 10px;
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 9px;
+  border-radius: 8px;
   color: var(--text-2);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   justify-content: flex-start;
   width: 100%;
@@ -215,14 +218,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   box-shadow: var(--shadow);
 }
 .btn {
-  padding: 9px 14px;
-  border-radius: 10px;
-  font-size: 13px;
+  padding: 6px 11px;
+  border-radius: 8px;
+  font-size: 12px;
   font-weight: 600;
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--panel);
   color: var(--text);
-  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
 }
 .btn-primary {
   background: #101214;
@@ -251,23 +254,24 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ---------- Card ---------- */
 .card {
   background: var(--panel);
+  border: 1px solid var(--border-2);
   border-radius: var(--radius);
-  padding: 18px;
+  padding: 14px;
   box-shadow: var(--shadow);
   display: flex; flex-direction: column;
   min-width: 0;
 }
 .card-head {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .card-title {
-  font-size: 14px; font-weight: 600; color: var(--text);
-  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500; color: var(--text-2);
+  display: inline-flex; align-items: center; gap: 6px;
 }
 .card-title .dot { width: 6px; height: 6px; }
 .card-arrow {
-  width: 26px; height: 26px; border-radius: 8px;
+  width: 22px; height: 22px; border-radius: 6px;
   background: var(--panel-2);
   display: inline-flex; align-items: center; justify-content: center;
   color: var(--text-2);
@@ -275,14 +279,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .card-arrow:hover { background: #eef0f3; }
 
 .stat-value {
-  font-size: 34px;
+  font-size: 24px;
   font-weight: 700;
-  letter-spacing: -0.03em;
-  margin: 6px 0 8px;
+  letter-spacing: -0.025em;
+  margin: 4px 0 6px;
 }
 .stat-delta {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12px; color: var(--text-2);
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--text-2);
 }
 .stat-delta.down { color: var(--red); }
 .stat-delta.up { color: var(--green); }
@@ -391,12 +395,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: center;
 }
 .spent-meta { display: flex; flex-direction: column; gap: 10px; }
-.spent-amt { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+.spent-amt { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
 .spent-delta { font-size: 11px; color: var(--text-2); display: inline-flex; align-items: center; gap: 6px; }
 .spent-legend { display: flex; flex-direction: column; gap: 6px; font-size: 11px; color: var(--text-2); }
 
 /* ---------- Spending table ---------- */
-.table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
 .table th {
   text-align: left;
   font-size: 10px;
@@ -436,7 +440,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transform: translate(-50%, -30%);
   text-align: center;
 }
-.gauge-value { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; }
+.gauge-value { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
 .gauge-label { font-size: 11px; color: var(--text-2); margin-top: 2px; }
 
 .revenue-legend {
@@ -458,14 +462,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ---------- CRUD page ---------- */
 .page-header {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: center; gap: 10px;
   padding: 2px;
 }
 .page-header .crumbs {
-  font-size: 12px; color: var(--text-3); font-weight: 500;
+  font-size: 11px; color: var(--text-3); font-weight: 500;
 }
 .page-header h1 {
-  font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+  font-size: 17px; font-weight: 700; letter-spacing: -0.015em;
   margin: 2px 0 0;
 }
 .page-header .actions {
@@ -495,7 +499,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .crud-table {
-  width: 100%; border-collapse: collapse; font-size: 13.5px;
+  width: 100%; border-collapse: collapse; font-size: 12px;
 }
 .crud-table th {
   text-align: left; font-size: 11px; letter-spacing: 0.06em;
@@ -556,10 +560,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 18px 20px 4px;
 }
 .modal-head h2 {
-  font-size: 16px; font-weight: 700; letter-spacing: -0.01em;
+  font-size: 14px; font-weight: 700; letter-spacing: -0.01em;
   margin: 0 0 2px;
 }
-.modal-head p { font-size: 12px; color: var(--text-3); margin: 0; }
+.modal-head p { font-size: 11px; color: var(--text-3); margin: 0; }
 .modal-body { padding: 16px 20px 4px; }
 .modal-foot {
   padding: 12px 20px 18px;
@@ -718,8 +722,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 10px;
   background: var(--panel-2);
 }
-.result-stat .value { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
-.result-stat .label { font-size: 10.5px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+.result-stat .value { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+.result-stat .label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
 .result-stat.tone-ok    { background: #e7f7ee; color: #137a42; }
 .result-stat.tone-info  { background: #eaf0ff; color: #2f6bff; }
 .result-stat.tone-warn  { background: #fff4e3; color: #b8700e; }
@@ -1082,7 +1086,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   gap: 12px;
   padding: 16px 24px 8px;
 }
-.chart-modal-head h2 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+.chart-modal-head h2 { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
 .chart-modal-head p  { margin: 2px 0 0; font-size: 12px; color: var(--text-3); }
 
 .chart-modal-actions {
@@ -1228,9 +1232,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   min-height: 0;
   padding: 0 0 12px;
 }
-.details-table-wrap .crud-table { font-size: 12px; }
+.details-table-wrap .crud-table { font-size: 11px; }
 .details-table-wrap .crud-table th,
-.details-table-wrap .crud-table td { white-space: nowrap; padding: 8px 10px; }
+.details-table-wrap .crud-table td { white-space: nowrap; padding: 6px 9px; }
 
 /* Cabeçalho fixo enquanto rola */
 .details-table-wrap .crud-table thead tr:first-child th {
