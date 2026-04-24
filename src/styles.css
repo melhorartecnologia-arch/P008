@@ -1025,13 +1025,24 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-style: italic;
 }
 
-/* Grid dedicado da Home 2: 4 cards NF lado a lado */
+/* Grid dedicado da Home 2: 4 cards NF lado a lado.
+   Mantém os 4 cards na mesma linha em 1920×1080 @150% (≈1280px CSS).
+   Só dobra para 2 colunas em telas realmente estreitas (<1100px). */
 .grid.row-nf { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-@media (max-width: 1400px) {
+@media (max-width: 1100px) {
   .grid.row-nf { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 900px) {
+@media (max-width: 720px) {
   .grid.row-nf { grid-template-columns: 1fr; }
+}
+
+/* Em telas médias (≈1100–1380px) reduz mais um pouco a tipografia
+   e o espaçamento interno para garantir que as 4 colunas caibam. */
+@media (max-width: 1380px) {
+  .grid.row-nf { gap: 10px; }
+  .grid.row-nf .nf-card { padding: 12px 12px 10px; }
+  .grid.row-nf .nf-value-xl { font-size: 19px; }
+  .grid.row-nf .nf-value-md { font-size: 14px; }
 }
 
 /* No grid compacto de 4 cards, reduz tipografia para caber melhor */
