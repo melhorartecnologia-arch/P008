@@ -959,6 +959,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-variant-numeric: tabular-nums;
   color: var(--red);
   margin: 2px 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 .nf-grid {
   display: grid;
@@ -975,12 +979,18 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 .nf-value-sm {
   font-size: 14px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1.35;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .nf-value-sm strong { font-weight: 700; }
 .nf-muted {
