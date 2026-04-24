@@ -5,15 +5,6 @@ const fmtInt = (n) => new Intl.NumberFormat('pt-BR').format(n)
 const fmtMoney = (n) => new Intl.NumberFormat('pt-BR', {
   style: 'currency', currency: 'BRL'
 }).format(n)
-// Notação compacta para caber em cells estreitas (ex.: "Valor total"
-// dentro do grid de 2 colunas, que fica ~100px em 1920×1080 @150%).
-const fmtMoneyCompact = (n) => {
-  const v = Number(n || 0)
-  const abs = Math.abs(v)
-  if (abs >= 1_000_000) return `R$ ${(v / 1_000_000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}M`
-  if (abs >= 10_000)    return `R$ ${(v / 1_000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}k`
-  return fmtMoney(v)
-}
 const fmtPct = (n) => new Intl.NumberFormat('pt-BR', {
   minimumFractionDigits: 1, maximumFractionDigits: 2
 }).format(n)
@@ -117,9 +108,7 @@ export default function NfVariationCard({
 
       <div className="nf-primary">
         <span className="nf-sublabel">{valorizacaoLabel}</span>
-        <div className="nf-value-xl" style={{ color: dotColor }} title={fmtMoney(valorizacao)}>
-          {fmtMoneyCompact(valorizacao)}
-        </div>
+        <div className="nf-value-xl" style={{ color: dotColor }}>{fmtMoney(valorizacao)}</div>
         <div className={`stat-delta ${trend}`}>
           <TrendIcon size={13} />
           <span>{fmtPct(percentValorizacao)}% do valor total</span>
@@ -129,9 +118,7 @@ export default function NfVariationCard({
       <div className="nf-grid">
         <div className="nf-cell">
           <span className="nf-sublabel">Valor total</span>
-          <div className="nf-value-md" title={fmtMoney(valorTotal)}>
-            {fmtMoneyCompact(valorTotal)}
-          </div>
+          <div className="nf-value-md">{fmtMoney(valorTotal)}</div>
         </div>
         <div className="nf-cell">
           <span className="nf-sublabel">Itens</span>
