@@ -31,7 +31,7 @@ body {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   font-feature-settings: 'cv11', 'ss01', 'ss03';
-  font-size: 12px;
+  font-size: 10px;
   line-height: 1.4;
 }
 
@@ -65,7 +65,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   gap: 8px;
   padding: 4px 6px 12px;
   font-weight: 700;
-  font-size: 11.5px;
+  font-size: 10px;
   letter-spacing: -0.015em;
 }
 .logo-mark {
@@ -104,7 +104,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 6px 9px;
   border-radius: 8px;
   color: var(--text-2);
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 500;
   justify-content: flex-start;
   width: 100%;
@@ -118,7 +118,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .nav-item .kbd {
   margin-left: auto;
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-3);
 }
 .nav-subgroup {
@@ -129,12 +129,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .nav-item.sub {
   padding: 7px 10px;
-  font-size: 11px;
+  font-size: 9.5px;
 }
 
 .nav-section {
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-3);
   letter-spacing: 0.1em;
   padding: 18px 10px 8px;
@@ -152,7 +152,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 10px;
   color: var(--accent);
   font-weight: 600;
-  font-size: 11.5px;
+  font-size: 10px;
   margin-top: 4px;
 }
 .add-new:hover { background: var(--accent-soft); }
@@ -168,12 +168,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: linear-gradient(135deg, #ffd6a5, #ffadad);
   display: flex; align-items: center; justify-content: center;
   color: #7a4a1f; font-weight: 700;
-  font-size: 11.5px;
+  font-size: 10px;
   flex-shrink: 0;
 }
 .profile-info { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
-.profile-info .name { font-weight: 600; font-size: 11px; }
-.profile-info .mail { font-size: 10px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; }
+.profile-info .name { font-weight: 600; font-size: 9.5px; }
+.profile-info .mail { font-size: 9px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; }
 .profile-more { margin-left: auto; color: var(--text-3); display: flex; padding: 4px; }
 
 /* ---------- Main layout ---------- */
@@ -187,7 +187,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 4px 2px 4px 6px;
 }
 .page-title {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: -0.02em;
   margin-right: 8px;
@@ -202,7 +202,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .tab {
   padding: 6px 12px; border-radius: 8px;
-  font-size: 11px; color: var(--text-2); font-weight: 500;
+  font-size: 9.5px; color: var(--text-2); font-weight: 500;
 }
 .tab.active { background: #f3f4f7; color: var(--text); font-weight: 600; }
 
@@ -220,7 +220,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .btn {
   padding: 6px 11px;
   border-radius: 8px;
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 600;
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--panel);
@@ -266,7 +266,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   margin-bottom: 8px;
 }
 .card-title {
-  font-size: 10.5px; font-weight: 500; color: var(--text-2);
+  font-size: 9.5px; font-weight: 500; color: var(--text-2);
   display: inline-flex; align-items: center; gap: 6px;
 }
 .card-title .dot { width: 6px; height: 6px; }
@@ -279,14 +279,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .card-arrow:hover { background: #eef0f3; }
 
 .stat-value {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.025em;
   margin: 4px 0 6px;
 }
 .stat-delta {
   display: inline-flex; align-items: center; gap: 5px;
-  font-size: 10px; color: var(--text-2);
+  font-size: 9px; color: var(--text-2);
 }
 .stat-delta.down { color: var(--red); }
 .stat-delta.up { color: var(--green); }
@@ -306,16 +306,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: inline-flex; align-items: center; gap: 6px;
   background: #eef3ff; color: #2f6bff;
   padding: 4px 8px; border-radius: 8px;
-  font-size: 10px; font-weight: 600;
+  font-size: 9px; font-weight: 600;
 }
 .ai-pin {
   display: inline-flex; align-items: center; gap: 4px;
   background: #eaf0ff; color: var(--accent);
   padding: 4px 8px; border-radius: 8px;
-  font-size: 10px; font-weight: 600;
+  font-size: 9px; font-weight: 600;
 }
 .ai-title {
-  font-size: 12px; font-weight: 700; letter-spacing: -0.01em;
+  font-size: 10px; font-weight: 700; letter-spacing: -0.01em;
   margin: 2px 0 12px;
   display: flex; align-items: center; gap: 6px;
 }
@@ -323,13 +323,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .ai-item {
   border-radius: 12px;
   padding: 10px 12px;
-  font-size: 10.5px; color: var(--text-2);
+  font-size: 9.5px; color: var(--text-2);
   line-height: 1.45;
 }
 .ai-item .t {
   display: flex; align-items: center; gap: 6px;
   font-weight: 700; color: var(--text);
-  font-size: 10.5px;
+  font-size: 9.5px;
   margin-bottom: 2px;
 }
 .ai-item.rev { background: #eaf3ff; }
@@ -343,7 +343,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 12px;
   padding: 10px 12px;
   color: var(--text-3);
-  font-size: 10.5px;
+  font-size: 9.5px;
 }
 .ai-input .spark { color: var(--accent); }
 .ai-input .mic { margin-left: auto; color: var(--text-2); }
@@ -352,12 +352,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .balance-sub {
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--panel-2); color: var(--text-2);
-  border-radius: 8px; padding: 4px 8px; font-size: 10px; font-weight: 500;
+  border-radius: 8px; padding: 4px 8px; font-size: 9px; font-weight: 500;
 }
 .legend {
   display: flex; flex-wrap: wrap; gap: 14px;
   margin-top: 10px;
-  font-size: 10px; color: var(--text-2);
+  font-size: 9px; color: var(--text-2);
 }
 .legend-item { display: inline-flex; align-items: center; gap: 6px; }
 
@@ -372,38 +372,38 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .timebar-labels {
   display: flex; justify-content: space-between;
-  font-size: 10px; color: var(--text-3);
+  font-size: 9px; color: var(--text-3);
   margin-top: 6px;
 }
 
 /* ---------- Performance ---------- */
-.y-axis-label { font-size: 10px; color: var(--text-3); }
+.y-axis-label { font-size: 9px; color: var(--text-3); }
 
 .perf-tooltip {
   background: #101214;
   color: white;
   padding: 6px 10px;
   border-radius: 8px;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
-.perf-tooltip .sub { font-size: 10px; opacity: 0.7; font-weight: 400; }
+.perf-tooltip .sub { font-size: 9px; opacity: 0.7; font-weight: 400; }
 
 /* ---------- Spent Amount ---------- */
 .spent-wrap {
   display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: center;
 }
 .spent-meta { display: flex; flex-direction: column; gap: 10px; }
-.spent-amt { font-size: 13px; font-weight: 700; letter-spacing: -0.02em; }
-.spent-delta { font-size: 10px; color: var(--text-2); display: inline-flex; align-items: center; gap: 6px; }
-.spent-legend { display: flex; flex-direction: column; gap: 6px; font-size: 10px; color: var(--text-2); }
+.spent-amt { font-size: 10.5px; font-weight: 700; letter-spacing: -0.02em; }
+.spent-delta { font-size: 9px; color: var(--text-2); display: inline-flex; align-items: center; gap: 6px; }
+.spent-legend { display: flex; flex-direction: column; gap: 6px; font-size: 9px; color: var(--text-2); }
 
 /* ---------- Spending table ---------- */
-.table { width: 100%; border-collapse: collapse; font-size: 10px; }
+.table { width: 100%; border-collapse: collapse; font-size: 9px; }
 .table th {
   text-align: left;
-  font-size: 10px;
+  font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-3);
@@ -426,7 +426,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .status-pill {
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: 10.5px; color: var(--text-2);
+  font-size: 9.5px; color: var(--text-2);
 }
 
 /* ---------- Revenue gauge ---------- */
@@ -440,13 +440,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transform: translate(-50%, -30%);
   text-align: center;
 }
-.gauge-value { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
-.gauge-label { font-size: 10px; color: var(--text-2); margin-top: 2px; }
+.gauge-value { font-size: 13px; font-weight: 700; letter-spacing: -0.02em; }
+.gauge-label { font-size: 9px; color: var(--text-2); margin-top: 2px; }
 
 .revenue-legend {
   margin-top: 10px;
   display: flex; justify-content: space-around;
-  font-size: 10px; color: var(--text-2);
+  font-size: 9px; color: var(--text-2);
 }
 .revenue-legend .legend-item { flex-direction: column; align-items: center; gap: 4px; }
 
@@ -466,10 +466,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 2px;
 }
 .page-header .crumbs {
-  font-size: 10px; color: var(--text-3); font-weight: 500;
+  font-size: 9px; color: var(--text-3); font-weight: 500;
 }
 .page-header h1 {
-  font-size: 14px; font-weight: 700; letter-spacing: -0.015em;
+  font-size: 11.5px; font-weight: 700; letter-spacing: -0.015em;
   margin: 2px 0 0;
 }
 .page-header .actions {
@@ -485,24 +485,24 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: var(--panel-2);
   padding: 8px 12px; border-radius: 10px;
   min-width: 280px;
-  color: var(--text-2); font-size: 11px;
+  color: var(--text-2); font-size: 9.5px;
   border: 1px solid transparent;
 }
 .search-input:focus-within { border-color: var(--accent); background: white; }
 .search-input input {
   border: none; background: transparent; outline: none;
-  flex: 1; color: var(--text); font-size: 11px;
+  flex: 1; color: var(--text); font-size: 9.5px;
   font-family: inherit;
 }
 .toolbar .count {
-  margin-left: auto; font-size: 10.5px; color: var(--text-3);
+  margin-left: auto; font-size: 9.5px; color: var(--text-3);
 }
 
 .crud-table {
-  width: 100%; border-collapse: collapse; font-size: 10.5px;
+  width: 100%; border-collapse: collapse; font-size: 9.5px;
 }
 .crud-table th {
-  text-align: left; font-size: 10px; letter-spacing: 0.06em;
+  text-align: left; font-size: 9px; letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-3); font-weight: 600;
   padding: 10px 12px; border-bottom: 1px solid var(--border);
@@ -528,7 +528,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .empty-state {
   padding: 40px 20px; text-align: center;
-  color: var(--text-3); font-size: 11px;
+  color: var(--text-3); font-size: 9.5px;
 }
 
 .btn-danger {
@@ -560,10 +560,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 18px 20px 4px;
 }
 .modal-head h2 {
-  font-size: 13px; font-weight: 700; letter-spacing: -0.01em;
+  font-size: 10.5px; font-weight: 700; letter-spacing: -0.01em;
   margin: 0 0 2px;
 }
-.modal-head p { font-size: 10.5px; color: var(--text-3); margin: 0; }
+.modal-head p { font-size: 9.5px; color: var(--text-3); margin: 0; }
 .modal-body { padding: 16px 20px 4px; }
 .modal-foot {
   padding: 12px 20px 18px;
@@ -574,14 +574,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
 .field label {
-  font-size: 10.5px; font-weight: 600; color: var(--text-2);
+  font-size: 9.5px; font-weight: 600; color: var(--text-2);
 }
 .field input, .field textarea {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 12px;
   background: white;
-  color: var(--text); font-size: 11.5px;
+  color: var(--text); font-size: 10px;
   font-family: inherit;
   outline: none;
   transition: border-color 120ms;
@@ -593,10 +593,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .field textarea { resize: vertical; min-height: 72px; }
 .field .hint {
   display: flex; justify-content: space-between;
-  font-size: 10px; color: var(--text-3);
+  font-size: 9px; color: var(--text-3);
 }
 .field .error-msg {
-  font-size: 10px; color: var(--red);
+  font-size: 9px; color: var(--red);
 }
 .field.has-error input, .field.has-error textarea {
   border-color: var(--red);
@@ -605,7 +605,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .banner {
   background: #fdecee; color: var(--red);
   border-radius: 10px;
-  padding: 10px 12px; font-size: 10.5px;
+  padding: 10px 12px; font-size: 9.5px;
   margin-bottom: 10px;
 }
 
@@ -614,7 +614,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .pill {
   display: inline-flex; align-items: center; gap: 4px;
-  font-size: 10px; font-weight: 600;
+  font-size: 9px; font-weight: 600;
   padding: 3px 8px; border-radius: 999px;
 }
 .pill-on  { background: #e7f7ee; color: #137a42; }
@@ -658,15 +658,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.25);
 }
 .switch-label { display: flex; flex-direction: column; line-height: 1.35; }
-.switch-label strong { font-size: 11px; color: var(--text); font-weight: 600; }
-.switch-label small { font-size: 10px; color: var(--text-3); }
+.switch-label strong { font-size: 9.5px; color: var(--text); font-weight: 600; }
+.switch-label small { font-size: 9px; color: var(--text-3); }
 
 /* ---------- Import modal ---------- */
 .modal.modal-lg { max-width: 640px; }
 
 .import-hint {
   display: flex; align-items: center; gap: 8px;
-  font-size: 10.5px; color: var(--text-2);
+  font-size: 9.5px; color: var(--text-2);
   padding: 8px 12px;
   background: #f4f6ff;
   border-radius: 10px;
@@ -694,15 +694,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .file-drop:hover, .file-drop.has-file { border-color: var(--accent); background: #f4f6ff; }
 .file-drop input[type="file"] { display: none; }
 .file-drop > svg { color: var(--accent); flex-shrink: 0; }
-.file-drop strong { display: block; font-size: 11px; font-weight: 600; color: var(--text); }
-.file-drop small { display: block; font-size: 10px; color: var(--text-3); margin-top: 2px; }
+.file-drop strong { display: block; font-size: 9.5px; font-weight: 600; color: var(--text); }
+.file-drop small { display: block; font-size: 9px; color: var(--text-3); margin-top: 2px; }
 
 .import-mode {
   display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
   padding: 10px 12px;
   background: var(--panel-2);
   border-radius: 10px;
-  font-size: 10.5px;
+  font-size: 9.5px;
 }
 .import-mode .mode-label { color: var(--text-3); font-weight: 600; }
 .import-mode label {
@@ -722,8 +722,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 10px;
   background: var(--panel-2);
 }
-.result-stat .value { font-size: 12px; font-weight: 700; letter-spacing: -0.02em; }
-.result-stat .label { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+.result-stat .value { font-size: 10px; font-weight: 700; letter-spacing: -0.02em; }
+.result-stat .label { font-size: 9px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
 .result-stat.tone-ok    { background: #e7f7ee; color: #137a42; }
 .result-stat.tone-info  { background: #eaf0ff; color: #2f6bff; }
 .result-stat.tone-warn  { background: #fff4e3; color: #b8700e; }
@@ -739,11 +739,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .result-errors-head {
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: 10px; font-weight: 600;
+  font-size: 9px; font-weight: 600;
   color: var(--red);
   margin-bottom: 6px;
 }
-.result-errors ul { list-style: none; padding: 0; margin: 0; font-size: 10.5px; }
+.result-errors ul { list-style: none; padding: 0; margin: 0; font-size: 9.5px; }
 .result-errors li {
   display: flex; gap: 8px; align-items: center;
   padding: 4px 0; border-bottom: 1px solid var(--border-2);
@@ -751,12 +751,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .result-errors li:last-child { border-bottom: none; }
 .result-errors .err-row {
   font-variant-numeric: tabular-nums;
-  color: var(--text-3); font-size: 10px;
+  color: var(--text-3); font-size: 9px;
   min-width: 70px;
 }
 .result-errors .err-code {
   font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 10px; color: var(--text);
+  font-size: 9px; color: var(--text);
   background: var(--panel-2);
   padding: 1px 6px; border-radius: 6px;
 }
@@ -764,7 +764,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .result-ok {
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: 10.5px; color: #137a42;
+  font-size: 9.5px; color: #137a42;
   background: #e7f7ee;
   padding: 8px 12px;
   border-radius: 8px;
@@ -781,7 +781,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .form-section legend {
   padding: 0 6px;
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-3);
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -798,7 +798,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .table-wrap { overflow-x: auto; max-width: 100%; }
 .wide-table { min-width: 1400px; }
 .wide-table th, .wide-table td { white-space: nowrap; }
-.wide-table td { font-size: 10.5px; }
+.wide-table td { font-size: 9.5px; }
 .wide-table .sticky-right {
   position: sticky;
   right: 0;
@@ -838,7 +838,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--panel-2);
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-family: inherit;
   color: var(--text);
   outline: none;
@@ -871,7 +871,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   align-items: center;
   gap: 14px;
   padding: 10px 6px 2px;
-  font-size: 10.5px;
+  font-size: 9.5px;
   color: var(--text-2);
   flex-wrap: wrap;
 }
@@ -888,7 +888,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--panel-2);
-  font-size: 10.5px;
+  font-size: 9.5px;
 }
 
 .dt-pager {
@@ -898,7 +898,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   min-width: 30px; height: 30px;
   padding: 0 8px;
   border-radius: 8px;
-  font-size: 10.5px; font-weight: 600;
+  font-size: 9.5px; font-weight: 600;
   color: var(--text-2);
   background: transparent;
   display: inline-flex; align-items: center; justify-content: center;
@@ -921,7 +921,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px dashed var(--border);
-  font-size: 11px;
+  font-size: 9.5px;
   color: var(--text);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -929,7 +929,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .stat-extra .label {
   display: block;
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-3);
   font-weight: 600;
   text-transform: uppercase;
@@ -938,7 +938,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .stat-extra-pct {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   color: var(--text-3);
   letter-spacing: 0;
@@ -949,7 +949,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .nf-primary { margin: 2px 0 8px; }
 .nf-sublabel {
   display: block;
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-3);
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -957,7 +957,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   margin-bottom: 2px;
 }
 .nf-value-xl {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
@@ -978,7 +978,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .nf-cell { min-width: 0; }
 .nf-value-md {
-  font-size: 14px;
+  font-size: 11.5px;
   font-weight: 700;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
@@ -989,7 +989,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   min-width: 0;
 }
 .nf-value-sm {
-  font-size: 11.5px;
+  font-size: 10px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1.35;
@@ -1000,7 +1000,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .nf-muted {
   color: var(--text-3);
   font-weight: 500;
-  font-size: 10.5px;
+  font-size: 9.5px;
 }
 
 /* TopBar: seletor de intervalo customizado */
@@ -1010,14 +1010,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 4px 6px;
   border-radius: 10px;
   box-shadow: var(--shadow);
-  font-size: 10.5px;
+  font-size: 9.5px;
 }
 .custom-range input[type="date"] {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 5px 8px;
   background: var(--panel-2);
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-family: inherit;
   color: var(--text);
   outline: none;
@@ -1031,7 +1031,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .nf-period {
   display: inline-flex; align-items: center; gap: 6px;
-  font-size: 10px; color: var(--text-3);
+  font-size: 9px; color: var(--text-3);
   margin-bottom: 6px;
 }
 .nf-period .nf-loading {
@@ -1086,8 +1086,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   gap: 12px;
   padding: 16px 24px 8px;
 }
-.chart-modal-head h2 { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: -0.01em; }
-.chart-modal-head p  { margin: 2px 0 0; font-size: 10.5px; color: var(--text-3); }
+.chart-modal-head h2 { margin: 0; font-size: 10px; font-weight: 700; letter-spacing: -0.01em; }
+.chart-modal-head p  { margin: 2px 0 0; font-size: 9.5px; color: var(--text-3); }
 
 .chart-modal-actions {
   margin-left: auto;
@@ -1098,11 +1098,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   line-height: 1.1;
 }
 .chart-modal-net span {
-  font-size: 10px; color: var(--text-3);
+  font-size: 9px; color: var(--text-3);
   text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;
 }
 .chart-modal-net strong {
-  font-size: 14px; font-weight: 700; letter-spacing: -0.02em;
+  font-size: 11.5px; font-weight: 700; letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1131,7 +1131,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: #eef3ff;
   color: var(--accent);
   border-radius: 999px;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   cursor: pointer;
   transition: background 120ms;
@@ -1157,7 +1157,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 3px 10px;
   border-radius: 999px;
   border: 1px solid;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -1170,7 +1170,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 6px 10px 6px 14px;
   border-radius: 12px;
   box-shadow: var(--shadow);
-  font-size: 11px;
+  font-size: 9.5px;
   align-self: flex-start;
 }
 .filial-bar-label {
@@ -1178,7 +1178,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: var(--text-3);
   font-weight: 600;
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 9px;
   letter-spacing: 0.08em;
 }
 .filial-select {
@@ -1186,7 +1186,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 8px;
   padding: 7px 10px;
   background: var(--panel-2);
-  font-size: 11px;
+  font-size: 9.5px;
   font-family: inherit;
   color: var(--text);
   min-width: 280px;
@@ -1200,7 +1200,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .filial-clear {
   padding: 6px 10px;
-  font-size: 10.5px;
+  font-size: 9.5px;
 }
 
 /* ---------- Day details modal ---------- */
@@ -1232,7 +1232,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   min-height: 0;
   padding: 0 0 12px;
 }
-.details-table-wrap .crud-table { font-size: 10px; }
+.details-table-wrap .crud-table { font-size: 9px; }
 .details-table-wrap .crud-table th,
 .details-table-wrap .crud-table td { white-space: nowrap; padding: 6px 9px; }
 
@@ -1272,7 +1272,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 999px;
   background: var(--panel);
   color: var(--text-2);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   line-height: 1.4;
   cursor: pointer;
@@ -1300,7 +1300,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: inline-flex; align-items: center; gap: 4px;
   padding: 2px 8px;
   border-radius: 999px;
-  font-size: 10px; font-weight: 600;
+  font-size: 9px; font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .just-badge.empty { background: var(--panel-2); color: var(--text-3); }
@@ -1335,20 +1335,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: var(--text-3);
   text-align: center;
 }
-.details-side-empty p { max-width: 220px; font-size: 11px; line-height: 1.5; }
+.details-side-empty p { max-width: 220px; font-size: 9.5px; line-height: 1.5; }
 
 .details-side-head { padding: 16px 18px 8px; border-bottom: 1px solid var(--border); }
 .details-side-label {
-  font-size: 10px; color: var(--text-3);
+  font-size: 9px; color: var(--text-3);
   font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
   margin-bottom: 2px;
 }
 .details-side h3 {
-  font-size: 11.5px; font-weight: 700; margin: 0 0 4px;
+  font-size: 10px; font-weight: 700; margin: 0 0 4px;
   letter-spacing: -0.01em;
   overflow-wrap: anywhere;
 }
-.details-side-meta { font-size: 10px; color: var(--text-3); line-height: 1.5; }
+.details-side-meta { font-size: 9px; color: var(--text-3); line-height: 1.5; }
 
 .details-divergence {
   padding: 12px 18px;
@@ -1359,7 +1359,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .details-divergence-row {
   display: flex; justify-content: space-between; align-items: center;
-  font-size: 10.5px; color: var(--text-2);
+  font-size: 9.5px; color: var(--text-2);
 }
 .details-divergence-row strong {
   color: var(--text);
@@ -1373,12 +1373,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
+  font-size: 9px;
 }
 
 .details-divergence-section {
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: var(--text-3);
@@ -1394,7 +1394,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-bottom: 1px solid var(--border);
 }
 .just-form label {
-  font-size: 10px; font-weight: 600;
+  font-size: 9px; font-weight: 600;
   color: var(--text-2);
   margin-top: 8px;
 }
@@ -1404,7 +1404,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 8px;
   padding: 8px 10px;
   background: white;
-  font-size: 11px;
+  font-size: 9.5px;
   font-family: inherit;
   outline: none;
 }
@@ -1417,8 +1417,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex; align-items: center; justify-content: space-between;
   margin-top: 8px;
 }
-.hint-counter { font-size: 10px; color: var(--text-3); }
-.just-form .btn-primary { padding: 7px 12px; font-size: 10.5px; }
+.hint-counter { font-size: 9px; color: var(--text-3); }
+.just-form .btn-primary { padding: 7px 12px; font-size: 9.5px; }
 
 .just-list {
   padding: 12px 18px 20px;
@@ -1428,13 +1428,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .just-list-head {
   display: flex; align-items: center; gap: 6px;
-  font-size: 10px; font-weight: 700;
+  font-size: 9px; font-weight: 700;
   color: var(--text-3);
   text-transform: uppercase; letter-spacing: 0.08em;
   margin-bottom: 4px;
 }
 .just-empty {
-  font-size: 10.5px; color: var(--text-3);
+  font-size: 9.5px; color: var(--text-3);
   font-style: italic;
   padding: 8px 0;
 }
@@ -1448,13 +1448,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex; align-items: center; gap: 8px;
   margin-bottom: 4px;
 }
-.just-item-head strong { font-size: 10.5px; color: var(--text); }
+.just-item-head strong { font-size: 9.5px; color: var(--text); }
 .just-item-head span {
-  font-size: 10px; color: var(--text-3);
+  font-size: 9px; color: var(--text-3);
   margin-left: auto;
 }
 .just-item-head .row-action { width: 24px; height: 24px; }
-.just-item-body { font-size: 10.5px; color: var(--text); line-height: 1.5; overflow-wrap: anywhere; }
+.just-item-body { font-size: 9.5px; color: var(--text); line-height: 1.5; overflow-wrap: anywhere; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin { animation: spin 800ms linear infinite; }
@@ -1466,12 +1466,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 5px 8px 5px 12px;
   border-radius: 10px;
   box-shadow: var(--shadow);
-  font-size: 10.5px;
+  font-size: 9.5px;
   color: var(--text-2);
   cursor: pointer;
 }
 .topbar-filial-label {
-  font-size: 10px;
+  font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
@@ -1482,7 +1482,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 8px;
   padding: 5px 8px;
   background: var(--panel-2);
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-family: inherit;
   color: var(--text);
   min-width: 170px;
@@ -1501,7 +1501,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 999px;
   background: var(--accent-soft);
   color: var(--accent);
-  font-size: 10px; font-weight: 600;
+  font-size: 9px; font-weight: 600;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: 0.01em;
 }
@@ -1513,7 +1513,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 999px;
   background: #ecf4ff;
   color: #1e4ed8;
-  font-size: 10px; font-weight: 600;
+  font-size: 9px; font-weight: 600;
   letter-spacing: 0.01em;
 }
 
@@ -1527,28 +1527,28 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 10px 12px;
   background: var(--panel-2);
   border-radius: 10px;
-  font-size: 10.5px;
+  font-size: 9.5px;
   color: var(--text-2);
 }
-.algo-card strong { display: block; font-size: 11px; color: var(--text); }
-.algo-card small { display: block; margin-top: 2px; font-size: 10px; color: var(--text-3); line-height: 1.4; }
+.algo-card strong { display: block; font-size: 9.5px; color: var(--text); }
+.algo-card small { display: block; margin-top: 2px; font-size: 9px; color: var(--text-3); line-height: 1.4; }
 
 .algo-badge {
   width: 24px; height: 24px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700;
+  font-size: 9px; font-weight: 700;
   flex-shrink: 0;
 }
 .algo-badge.ok   { background: #e7f7ee; color: #137a42; }
 .algo-badge.soft { background: #fff4e3; color: #b8700e; }
 
 .algo-hint {
-  font-size: 10px; color: var(--text-3);
+  font-size: 9px; color: var(--text-3);
   padding: 0 4px;
 }
 
 /* Tabela de variação por grupo (Dashboard · row-3) */
-.grupo-variacao-table { font-size: 10.5px; }
+.grupo-variacao-table { font-size: 9.5px; }
 .grupo-variacao-table th { padding: 0 10px 8px; }
 .grupo-variacao-table td { padding: 8px 10px; }
 .grupo-variacao-table tfoot td {
@@ -1563,7 +1563,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .grupo-cell .grupo-pill { align-self: flex-start; }
 .grupo-cell .grupo-desc {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-2);
   max-width: 220px;
   overflow: hidden;
@@ -1572,7 +1572,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .grupo-variacao-table .status-pill small {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
@@ -1581,7 +1581,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .grupo-variacao-table thead tr:first-child .scen-group-head {
   border-bottom: 1px solid var(--border);
   text-align: center;
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-3);
   padding: 0 10px 6px;
   letter-spacing: 0.08em;
@@ -1590,7 +1590,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 6px 10px 8px;
 }
 .scen-col-head {
-  font-size: 10px;
+  font-size: 9px;
   display: table-cell;
   white-space: nowrap;
 }
@@ -1609,11 +1609,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-variant-numeric: tabular-nums;
 }
 .scen-cell strong {
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 700;
 }
 .scen-cell small {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-3);
   font-weight: 500;
 }
@@ -1625,7 +1625,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   padding: 0 0 6px;
 }
 .aprov-table {
-  font-size: 10.5px;
+  font-size: 9.5px;
   width: 100%;
 }
 .aprov-table th,
@@ -1639,7 +1639,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   background: var(--panel-2);
   box-shadow: inset 0 -1px 0 var(--border);
   z-index: 1;
-  font-size: 10px;
+  font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--text-3);
@@ -1649,7 +1649,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   bottom: 0;
   background: var(--panel-2);
   box-shadow: inset 0 1px 0 var(--border);
-  font-size: 10.5px;
+  font-size: 9.5px;
 }
 .aprov-table tbody tr:hover td { background: #f6f7fa; }
 
@@ -1658,8 +1658,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   flex-direction: column;
   line-height: 1.25;
 }
-.aprov-name strong { font-size: 10.5px; }
-.aprov-name small { color: var(--text-3); font-size: 10px; }
+.aprov-name strong { font-size: 9.5px; }
+.aprov-name small { color: var(--text-3); font-size: 9px; }
 
 .aprov-net {
   display: inline-flex;
@@ -1668,8 +1668,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   line-height: 1.15;
   font-variant-numeric: tabular-nums;
 }
-.aprov-net strong { font-size: 10.5px; font-weight: 700; }
-.aprov-net small  { font-size: 10px; opacity: 0.85; }
+.aprov-net strong { font-size: 9.5px; font-weight: 700; }
+.aprov-net small  { font-size: 9px; opacity: 0.85; }
 
 /* VariacaoPorGrupo: células clicáveis */
 .clickable-cell {
@@ -1690,7 +1690,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .card-title .card-hint {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   color: var(--text-3);
   margin-left: 8px;
@@ -1710,13 +1710,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-variant-numeric: tabular-nums;
 }
 .doc-line.doc-main {
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 600;
   color: var(--text);
   letter-spacing: 0.01em;
 }
 .doc-line.doc-muted {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-3);
   font-weight: 500;
 }
@@ -1731,7 +1731,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: #ffffff;
   padding: 8px 12px;
   border-radius: 10px;
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 500;
   letter-spacing: 0.01em;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
@@ -1745,7 +1745,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: #fff;
 }
 .row-tooltip-label {
-  font-size: 9.5px;
+  font-size: 9px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.55);
   letter-spacing: 0.1em;
