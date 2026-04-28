@@ -251,6 +251,81 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   grid-template-columns: 1fr;
 }
 
+/* ---------- Login screen ---------- */
+.login-shell {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(180deg, #f4f5f7 0%, #e9ecf2 100%);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.login-card {
+  width: 100%;
+  max-width: 320px;
+  background: var(--panel);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius);
+  box-shadow:
+    0 1px 0 rgba(16, 24, 40, 0.04),
+    0 8px 32px rgba(16, 24, 40, 0.08);
+  padding: 22px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: -0.015em;
+}
+.login-title {
+  margin: 6px 0 2px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.login-sub {
+  margin: 0 0 10px;
+  font-size: 10.5px;
+  color: var(--text-3);
+}
+.login-card label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-top: 4px;
+}
+.login-card input[type="text"],
+.login-card input[type="password"] {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--text);
+  background: var(--panel);
+  outline: none;
+}
+.login-card input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.15);
+}
+.login-btn {
+  margin-top: 12px;
+  justify-content: center;
+}
+.login-card .spin {
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* ---------- Card ---------- */
 .card {
   background: var(--panel);

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Download, Upload, FileSpreadsheet, AlertTriangle, CheckCircle2 } from 'lucide-react'
 
+import { authHeaders } from '../api.js'
+
 const BASE = import.meta.env.VITE_API_BASE || '/api'
 
 export default function ImportProdutosModal({ onCancel, onImported }) {
@@ -40,7 +42,7 @@ export default function ImportProdutosModal({ onCancel, onImported }) {
       form.append('file', file)
       const res = await fetch(
         `${BASE}/produtos/import?mode=${mode}`,
-        { method: 'POST', body: form }
+        { method: 'POST', body: form, headers: authHeaders() }
       )
       const body = await res.json().catch(() => ({}))
       if (!res.ok && !body?.errors) {

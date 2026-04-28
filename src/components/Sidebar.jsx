@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  LayoutDashboard, MoreVertical,
+  LayoutDashboard, LogOut,
   FolderOpen, ChevronDown, ChevronRight,
   ArrowRightLeft, ShoppingBag, Receipt, Building2, Layers, FileCheck2
 } from 'lucide-react'
@@ -18,7 +18,9 @@ const cadastros = [
   { icon: FileCheck2,     label: 'Aprovações de Entradas Fiscais',   route: 'aprovacoes-entradas-fiscais' }
 ]
 
-export default function Sidebar({ route, onNavigate }) {
+export default function Sidebar({ route, onNavigate, user, onLogout }) {
+  const username = user?.username || 'admin'
+  const initial = username.charAt(0).toUpperCase()
   const cadastrosActive = cadastros.some(c => c.route === route)
   const [openCadastros, setOpenCadastros] = useState(cadastrosActive)
 
@@ -86,13 +88,18 @@ export default function Sidebar({ route, onNavigate }) {
       </nav>
 
       <div className="profile">
-        <div className="profile-avatar">F</div>
+        <div className="profile-avatar">{initial}</div>
         <div className="profile-info">
-          <span className="name">Felix</span>
-          <span className="mail">felix@auditsupply.demo</span>
+          <span className="name">{username}</span>
+          <span className="mail">Sessão ativa</span>
         </div>
-        <button className="profile-more" aria-label="More">
-          <MoreVertical size={16} />
+        <button
+          className="profile-more"
+          aria-label="Sair"
+          title="Sair"
+          onClick={onLogout}
+        >
+          <LogOut size={14} />
         </button>
       </div>
     </aside>

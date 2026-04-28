@@ -16,6 +16,7 @@ import entradasFiscais from './routes/entradasFiscais.js'
 import filiais from './routes/filiais.js'
 import gruposProdutos from './routes/gruposProdutos.js'
 import aprovacoesEntradasFiscais from './routes/aprovacoesEntradasFiscais.js'
+import authRouter, { requireAuth } from './routes/auth.js'
 
 const app = express()
 const PORT = Number(process.env.PORT || 3001)
@@ -31,6 +32,12 @@ app.get('/api/health', async (_req, res) => {
     res.status(503).json({ ok: false, error: err.message })
   }
 })
+
+// Endpoints públicos de auth (login / logout / me).
+app.use('/api/auth', authRouter)
+
+// A partir daqui tudo é protegido por Bearer token.
+app.use('/api', requireAuth)
 
 app.use('/api/stats', stats)
 app.use('/api/total-balance', totalBalance)

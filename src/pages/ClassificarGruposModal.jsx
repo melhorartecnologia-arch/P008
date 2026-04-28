@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { X as XIcon, Layers, Send, CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react'
+import { authHeaders } from '../api.js'
 
 const BASE = import.meta.env.VITE_API_BASE || '/api'
 
@@ -23,7 +24,7 @@ export default function ClassificarGruposModal({ onClose, onDone }) {
     try {
       const res = await fetch(`${BASE}/entradas-fiscais/classificar-grupos`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ mode })
       })
       const body = await res.json().catch(() => ({}))
